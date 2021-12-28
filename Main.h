@@ -30,6 +30,7 @@ __published:	// IDE-managed Components
 	TCheckBox *chkStartToTray;
 	TMemo *memoTitle;
 	TMemo *memoClass;
+	TCheckBox *chkEnabled;
 	void __fastcall FormCreate(TObject *Sender);
 	void __fastcall FormDestroy(TObject *Sender);
 	void __fastcall timerPuffTimer(TObject *Sender);
@@ -39,8 +40,9 @@ __published:	// IDE-managed Components
 	void __fastcall btnHideClick(TObject *Sender);
 	void __fastcall btnHelpClick(TObject *Sender);
 	void __fastcall btnExitClick(TObject *Sender);
+	void __fastcall FormKeyDown(TObject *Sender, WORD &Key, TShiftState Shift);
+	void __fastcall chkEnabledClick(TObject *Sender);
 private:	// User declarations
-	bool TargetProgram();
 	void Save();
 	void Load();
 	UnicodeString ProgramVer();
@@ -48,6 +50,7 @@ private:	// User declarations
 public:		// User declarations
 	__fastcall TForm1(TComponent* Owner);
 
+	bool TargetProgram();
 	void TimerReset();
 };
 //---------------------------------------------------------------------------

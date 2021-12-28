@@ -9,7 +9,7 @@
 //---------------------------------------------------------------------------
 USEFORM("Main.cpp", Form1);
 //---------------------------------------------------------------------------
-WINAPI _tWinMain(HINSTANCE, HINSTANCE, LPTSTR, int)
+int WINAPI _tWinMain(HINSTANCE, HINSTANCE, LPTSTR, int)
 {
 	try
 	{

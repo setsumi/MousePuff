@@ -15,10 +15,11 @@ HINSTANCE hInstance = NULL;
 HHOOK hMouseHook, hKbdHook;
 HCURSOR hCurBlank = NULL;
 bool CurIsVisible = true; // assuming current state of cursor (set in MyShowCursor())
-int Emergency = 0; // force show cursor after some amount of mouse movement (reset in MyShowCursor())
-int EmergencyMax = 300;
+int Emergency = 0; // force show cursor after some amount of mouse movement
+int EmergencyMax = 200;
 bool KeybTriggered = false; // flag when keyboard activated re-hide
 bool MouseTriggered = false; // flag when mouse button activated hide
+bool AppEnabled = true; // application function is active
 
 UnicodeString GetWindowClassPlus(HWND hwnd)
 {
@@ -104,7 +105,7 @@ void TForm1::Load() {
 	udTimeout->Position = ini->ReadInteger(L"MAIN", L"Timeout", 3);
 	TimerReset();
 	chkStartToTray->Checked = ini->ReadInteger(L"MAIN", L"StartToTray", 0) == 1;
-	EmergencyMax = ini->ReadInteger(L"MAIN", L"EmergencyMax", 300);
+	EmergencyMax = ini->ReadInteger(L"MAIN", L"EmergencyMax", 200);
 	delete ini;
 }
 //---------------------------------------------------------------------------
@@ -145,7 +146,6 @@ void MyShowCursor(bool show)
 	}
 
 	CurIsVisible = show;
-	Emergency = 0;
 	if (show) {
 		SystemParametersInfo(SPI_SETCURSORS, 0, NULL, 0);
 	} else {
@@ -157,13 +157,14 @@ void MyShowCursor(bool show)
 //---------------------------------------------------------------------------
 LRESULT CALLBACK LLHookMouseProc(int nCode,	WPARAM wParam, LPARAM lParam)
 {
-	if (nCode == HC_ACTION) { // allowed to process message
+	if (AppEnabled && nCode == HC_ACTION) { // allowed to process message
 		if (wParam == WM_MOUSEMOVE) {  // show cursor on mouse move
 			Form1->timerPuff->Enabled = false;
 			if (!CurIsVisible || KeybTriggered || MouseTriggered) {
-      	KeybTriggered = MouseTriggered = false;
+				KeybTriggered = MouseTriggered = false;
 				MyShowCursor(true);
 			} else if (++Emergency > EmergencyMax) {
+				Emergency = 0;
 				MyShowCursor(true);
 			}
 			Form1->TimerReset();
@@ -179,8 +180,14 @@ LRESULT CALLBACK LLHookMouseProc(int nCode,	WPARAM wParam, LPARAM lParam)
 //---------------------------------------------------------------------------
 LRESULT CALLBACK LLHookKeyboardProc(int nCode,	WPARAM wParam, LPARAM lParam)
 {
-	if (!(nCode < 0)) { // allowed to process message now
+	if (AppEnabled && !(nCode < 0)) { // allowed to process message now
 		if (nCode == HC_ACTION) {
+            // show cursor on alt-tabbing to another app
+			if (!Form1->radioBtnGlobal->Checked && !Form1->TargetProgram()) {
+				if (!CurIsVisible) {
+					MyShowCursor(true);
+				}
+			}
 			// start re-hide sequence on keyboard (in case some operation make cursor reappear)
 			KeybTriggered = true;
 			CurIsVisible = true;
@@ -267,5 +274,27 @@ void __fastcall TForm1::btnExitClick(TObject *Sender)
 {
 	Close();
 }
+
+//---------------------------------------------------------------------------
+void __fastcall TForm1::FormKeyDown(TObject *Sender, WORD &Key, TShiftState Shift)
+{
+	if (Key == VK_ESCAPE) {
+  		btnHideClick(this);
+	} else
+	if (Key == 'E' && Shift.Contains(ssCtrl)) {
+		chkEnabled->Checked = !chkEnabled->Checked;
+	}
+}
+
+//---------------------------------------------------------------------------
+void __fastcall TForm1::chkEnabledClick(TObject *Sender)
+{
+	timerPuff->Enabled = false;
+	AppEnabled = chkEnabled->Checked;
+	if (!AppEnabled) {
+		MyShowCursor(true);
+	}
+}
+
 //---------------------------------------------------------------------------
 

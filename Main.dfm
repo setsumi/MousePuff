@@ -12,24 +12,26 @@ object Form1: TForm1
   Font.Height = -11
   Font.Name = 'Tahoma'
   Font.Style = []
+  KeyPreview = True
   OldCreateOrder = False
   ShowHint = True
   OnCreate = FormCreate
   OnDestroy = FormDestroy
+  OnKeyDown = FormKeyDown
   PixelsPerInch = 96
   TextHeight = 13
   object Label1: TLabel
-    Left = 12
+    Left = 27
     Top = 80
-    Width = 53
+    Width = 38
     Height = 26
     Alignment = taRightJustify
     Caption = 'Window'#13#10'Title(s)'
   end
   object Label2: TLabel
-    Left = 12
+    Left = 21
     Top = 162
-    Width = 53
+    Width = 44
     Height = 26
     Alignment = taRightJustify
     Caption = 'Window'#13#10'Class(es)'
@@ -37,7 +39,7 @@ object Form1: TForm1
   object Label3: TLabel
     Left = 128
     Top = 13
-    Width = 109
+    Width = 102
     Height = 13
     Caption = 'Hide after idling (sec)'
   end
@@ -89,7 +91,7 @@ object Form1: TForm1
     Height = 25
     Hint = 'Determine title and class of active window'
     Caption = 'Spy...'
-    TabOrder = 7
+    TabOrder = 8
     OnClick = btnSpyClick
   end
   object chkDebug: TCheckBox
@@ -102,12 +104,12 @@ object Form1: TForm1
   end
   object btnHide: TButton
     Left = 300
-    Top = 192
+    Top = 215
     Width = 53
     Height = 25
-    Hint = 'Minimize to tray'
+    Hint = 'Minimize to tray (Esc)'
     Caption = #8600' Hide '#8600
-    TabOrder = 9
+    TabOrder = 10
     OnClick = btnHideClick
   end
   object btnHelp: TButton
@@ -121,13 +123,13 @@ object Form1: TForm1
     OnClick = btnHelpClick
   end
   object btnExit: TButton
-    Left = 300
-    Top = 157
+    Left = 301
+    Top = 163
     Width = 53
     Height = 25
     Hint = 'Terminate program'
     Caption = #215' Exit '#215
-    TabOrder = 8
+    TabOrder = 9
     OnClick = btnExitClick
   end
   object chkStartToTray: TCheckBox
@@ -136,7 +138,7 @@ object Form1: TForm1
     Width = 134
     Height = 17
     Caption = 'Start minimized to tray'
-    TabOrder = 10
+    TabOrder = 12
   end
   object memoTitle: TMemo
     Left = 71
@@ -155,7 +157,7 @@ object Form1: TForm1
       '9'
       '10')
     ScrollBars = ssBoth
-    TabOrder = 5
+    TabOrder = 6
     WordWrap = False
   end
   object memoClass: TMemo
@@ -175,8 +177,25 @@ object Form1: TForm1
       '9'
       '10')
     ScrollBars = ssBoth
-    TabOrder = 6
+    TabOrder = 7
     WordWrap = False
+  end
+  object chkEnabled: TCheckBox
+    Left = 133
+    Top = 39
+    Width = 152
+    Height = 17
+    Caption = 'Enabled (Ctrl+E)'
+    Checked = True
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -11
+    Font.Name = 'Tahoma'
+    Font.Style = [fsBold]
+    ParentFont = False
+    State = cbChecked
+    TabOrder = 5
+    OnClick = chkEnabledClick
   end
   object timerPuff: TTimer
     Enabled = False

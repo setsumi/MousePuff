@@ -2,7 +2,7 @@ object FormMain: TFormMain
   Left = 506
   Top = 250
   BorderIcons = [biSystemMenu, biMinimize]
-  Caption = 'Active Window Info'
+  Caption = 'Active Window Info Spy'
   ClientHeight = 124
   ClientWidth = 393
   Color = clBtnFace
@@ -26,10 +26,6 @@ object FormMain: TFormMain
     ScrollBars = ssBoth
     TabOrder = 0
     WordWrap = False
-    ExplicitLeft = 72
-    ExplicitTop = 4
-    ExplicitWidth = 185
-    ExplicitHeight = 113
   end
   object StatusBar1: TStatusBar
     Left = 377
@@ -40,8 +36,6 @@ object FormMain: TFormMain
     Anchors = [akRight, akBottom]
     Panels = <>
     SimplePanel = True
-    ExplicitLeft = 416
-    ExplicitTop = 144
   end
   object TimerPoll: TTimer
     Interval = 300
