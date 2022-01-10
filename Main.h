@@ -16,8 +16,6 @@ __published:	// IDE-managed Components
 	TTimer *timerPuff;
 	TRadioButton *radioBtnGlobal;
 	TRadioButton *radioBtnProgram;
-	TLabel *Label1;
-	TLabel *Label2;
 	TTrayIcon *trayIcon;
 	TUpDown *udTimeout;
 	TEdit *editTimeout;
@@ -28,9 +26,12 @@ __published:	// IDE-managed Components
 	TButton *btnHelp;
 	TButton *btnExit;
 	TCheckBox *chkStartToTray;
+	TCheckBox *chkEnabled;
+	TPageControl *pageControl1;
+	TTabSheet *tabsheetTitle;
+	TTabSheet *tabsheetClass;
 	TMemo *memoTitle;
 	TMemo *memoClass;
-	TCheckBox *chkEnabled;
 	void __fastcall FormCreate(TObject *Sender);
 	void __fastcall FormDestroy(TObject *Sender);
 	void __fastcall timerPuffTimer(TObject *Sender);

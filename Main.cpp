@@ -90,6 +90,7 @@ void TForm1::Save() {
 	ini->WriteInteger(L"MAIN", L"Timeout", udTimeout->Position);
 	ini->WriteInteger(L"MAIN", L"StartToTray", chkStartToTray->Checked?1:0);
 	ini->WriteInteger(L"MAIN", L"EmergencyMax", EmergencyMax);
+	ini->WriteInteger(L"MAIN", L"WinPageIndex", pageControl1->TabIndex);
 	delete ini;
 }
 //---------------------------------------------------------------------------
@@ -106,6 +107,7 @@ void TForm1::Load() {
 	TimerReset();
 	chkStartToTray->Checked = ini->ReadInteger(L"MAIN", L"StartToTray", 0) == 1;
 	EmergencyMax = ini->ReadInteger(L"MAIN", L"EmergencyMax", 200);
+	pageControl1->TabIndex = ini->ReadInteger(L"MAIN", L"WinPageIndex", 0);
 	delete ini;
 }
 //---------------------------------------------------------------------------

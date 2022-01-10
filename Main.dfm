@@ -5,7 +5,7 @@ object Form1: TForm1
   BorderStyle = bsSingle
   Caption = 'MousePuff (Hide Mouse Pointer)'
   ClientHeight = 248
-  ClientWidth = 362
+  ClientWidth = 360
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -20,22 +20,6 @@ object Form1: TForm1
   OnKeyDown = FormKeyDown
   PixelsPerInch = 96
   TextHeight = 13
-  object Label1: TLabel
-    Left = 27
-    Top = 80
-    Width = 38
-    Height = 26
-    Alignment = taRightJustify
-    Caption = 'Window'#13#10'Title(s)'
-  end
-  object Label2: TLabel
-    Left = 21
-    Top = 162
-    Width = 44
-    Height = 26
-    Alignment = taRightJustify
-    Caption = 'Window'#13#10'Class(es)'
-  end
   object Label3: TLabel
     Left = 128
     Top = 13
@@ -85,13 +69,13 @@ object Form1: TForm1
     Text = '3'
   end
   object btnSpy: TButton
-    Left = 12
-    Top = 131
+    Left = 301
+    Top = 65
     Width = 53
     Height = 25
     Hint = 'Determine title and class of active window'
     Caption = 'Spy...'
-    TabOrder = 8
+    TabOrder = 7
     OnClick = btnSpyClick
   end
   object chkDebug: TCheckBox
@@ -100,7 +84,7 @@ object Form1: TForm1
     Width = 97
     Height = 17
     Caption = 'Debug sounds'
-    TabOrder = 11
+    TabOrder = 10
   end
   object btnHide: TButton
     Left = 300
@@ -109,7 +93,7 @@ object Form1: TForm1
     Height = 25
     Hint = 'Minimize to tray (Esc)'
     Caption = #8600' Hide '#8600
-    TabOrder = 10
+    TabOrder = 9
     OnClick = btnHideClick
   end
   object btnHelp: TButton
@@ -129,61 +113,21 @@ object Form1: TForm1
     Height = 25
     Hint = 'Terminate program'
     Caption = #215' Exit '#215
-    TabOrder = 9
+    TabOrder = 8
     OnClick = btnExitClick
   end
   object chkStartToTray: TCheckBox
-    Left = 160
+    Left = 151
     Top = 223
     Width = 134
     Height = 17
     Caption = 'Start minimized to tray'
-    TabOrder = 12
-  end
-  object memoTitle: TMemo
-    Left = 71
-    Top = 62
-    Width = 278
-    Height = 76
-    Lines.Strings = (
-      '1'
-      '2'
-      '3'
-      '4'
-      '5'
-      '6'
-      '7'
-      '8'
-      '9'
-      '10')
-    ScrollBars = ssBoth
-    TabOrder = 6
-    WordWrap = False
-  end
-  object memoClass: TMemo
-    Left = 71
-    Top = 141
-    Width = 218
-    Height = 76
-    Lines.Strings = (
-      '1'
-      '2'
-      '3'
-      '4'
-      '5'
-      '6'
-      '7'
-      '8'
-      '9'
-      '10')
-    ScrollBars = ssBoth
-    TabOrder = 7
-    WordWrap = False
+    TabOrder = 11
   end
   object chkEnabled: TCheckBox
     Left = 133
     Top = 39
-    Width = 152
+    Width = 124
     Height = 17
     Caption = 'Enabled (Ctrl+E)'
     Checked = True
@@ -197,11 +141,81 @@ object Form1: TForm1
     TabOrder = 5
     OnClick = chkEnabledClick
   end
+  object pageControl1: TPageControl
+    Left = 8
+    Top = 65
+    Width = 287
+    Height = 152
+    ActivePage = tabsheetTitle
+    TabOrder = 6
+    object tabsheetTitle: TTabSheet
+      Caption = 'Window Title(s)'
+      ExplicitTop = 38
+      ExplicitWidth = 211
+      ExplicitHeight = 165
+      object memoTitle: TMemo
+        Left = 0
+        Top = 0
+        Width = 279
+        Height = 124
+        Align = alClient
+        Lines.Strings = (
+          '1'
+          '2'
+          '3'
+          '4'
+          '5'
+          '6'
+          '7'
+          '8'
+          '9'
+          '10')
+        ScrollBars = ssBoth
+        TabOrder = 0
+        WordWrap = False
+        ExplicitLeft = 71
+        ExplicitTop = 62
+        ExplicitWidth = 278
+        ExplicitHeight = 76
+      end
+    end
+    object tabsheetClass: TTabSheet
+      Caption = 'Window Class(es)'
+      ImageIndex = 1
+      ExplicitWidth = 211
+      ExplicitHeight = 165
+      object memoClass: TMemo
+        Left = 0
+        Top = 0
+        Width = 279
+        Height = 124
+        Align = alClient
+        Lines.Strings = (
+          '1'
+          '2'
+          '3'
+          '4'
+          '5'
+          '6'
+          '7'
+          '8'
+          '9'
+          '10')
+        ScrollBars = ssBoth
+        TabOrder = 0
+        WordWrap = False
+        ExplicitLeft = 71
+        ExplicitTop = 89
+        ExplicitWidth = 218
+        ExplicitHeight = 76
+      end
+    end
+  end
   object timerPuff: TTimer
     Enabled = False
     OnTimer = timerPuffTimer
-    Left = 192
-    Top = 68
+    Left = 136
+    Top = 124
   end
   object trayIcon: TTrayIcon
     Hint = 'MousePuff (Hide Mouse Pointer)'
@@ -232,7 +246,7 @@ object Form1: TForm1
       000000000000000000000000000000000000000000000000000000000000}
     Visible = True
     OnClick = trayIconClick
-    Left = 140
-    Top = 68
+    Left = 92
+    Top = 124
   end
 end
