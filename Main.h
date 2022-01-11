@@ -32,6 +32,8 @@ __published:	// IDE-managed Components
 	TTabSheet *tabsheetClass;
 	TMemo *memoTitle;
 	TMemo *memoClass;
+	TTabSheet *tabsheetExe;
+	TMemo *memoExe;
 	void __fastcall FormCreate(TObject *Sender);
 	void __fastcall FormDestroy(TObject *Sender);
 	void __fastcall timerPuffTimer(TObject *Sender);

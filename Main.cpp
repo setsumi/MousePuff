@@ -21,39 +21,51 @@ bool KeybTriggered = false; // flag when keyboard activated re-hide
 bool MouseTriggered = false; // flag when mouse button activated hide
 bool AppEnabled = true; // application function is active
 
-UnicodeString GetWindowClassPlus(HWND hwnd) {
-	wchar_t *tbuf = new wchar_t[2048];
+String GetWindowClassPlus(HWND hwnd) {
+	wchar_t tbuf[2048];
 	tbuf[0] = L'\0';
 	GetClassName(hwnd, tbuf, 2047);
-	UnicodeString ret(tbuf);
-	delete[]tbuf;
-	return ret;
+	return tbuf;
 }
 
-UnicodeString GetWindowTitlePlus(HWND hwnd) {
-	wchar_t *tbuf = new wchar_t[2048];
+String GetWindowTitlePlus(HWND hwnd) {
+	wchar_t tbuf[2048];
 	tbuf[0] = L'\0';
 	GetWindowText(hwnd, tbuf, 2047);
-	UnicodeString ret(tbuf);
-	delete[]tbuf;
-	return ret;
+	return tbuf;
 }
 
-void RunExe(UnicodeString cmdline) {
+String GetWindowExePlus(HWND hwnd) {
+	DWORD pid = 0;
+	wchar_t tbuf[2048] = {0};
+	DWORD size = 2048;
+	GetWindowThreadProcessId(hwnd, &pid);
+	HANDLE ph = OpenProcess(PROCESS_QUERY_INFORMATION | PROCESS_VM_READ, FALSE, pid);
+	QueryFullProcessImageName(ph, 0, tbuf, &size);
+	CloseHandle(ph);
+	return tbuf;
+}
+
+void RunExe(String cmdline) {
 	STARTUPINFO si;
 	PROCESS_INFORMATION pi;
 	ZeroMemory(&si, sizeof(si));
 	si.cb = sizeof(si);
 	ZeroMemory(&pi, sizeof(pi));
-	if (!CreateProcess(NULL, cmdline.t_str(), NULL, NULL, FALSE, CREATE_NO_WINDOW, NULL,
-		NULL, &si, &pi))
+	if (CreateProcess(NULL, cmdline.w_str(), NULL, NULL, FALSE, CREATE_NO_WINDOW, NULL,
+		NULL, &si, &pi)) {
+		CloseHandle(pi.hThread);
+		CloseHandle(pi.hProcess);
+	}
+	else {
 		throw Exception(L"RunExe(\"" + cmdline + L"\") failed");
+	}
 }
 
 // ---------------------------------------------------------------------------
-UnicodeString TForm1::ProgramVer() {
-	UnicodeString ret;
-	DWORD hnd = 0, vis = 0;
+String TForm1::ProgramVer() {
+	String ret;
+	DWORD hnd = 0, vis;
 	if (0 != (vis = GetFileVersionInfoSize(GetModuleName(NULL).w_str(), &hnd))) {
 		BYTE *data = new BYTE[vis];
 		if (GetFileVersionInfo(GetModuleName(NULL).w_str(), hnd, vis, data)) {
@@ -67,7 +79,7 @@ UnicodeString TForm1::ProgramVer() {
 			// Read first language and code page
 			if (VerQueryValue(data, L"\\VarFileInfo\\Translation", (LPVOID*)&lpTranslate,
 				&ilen)) {
-				UnicodeString str;
+				String str;
 				str.printf(L"\\StringFileInfo\\%04x%04x\\FileVersion",
 					lpTranslate->wLanguage, lpTranslate->wCodePage);
 				// Retrieve file version for language and code page
@@ -93,6 +105,7 @@ void TForm1::TimerReset() {
 void TForm1::Save() {
 	memoTitle->Lines->SaveToFile(L"title.ini");
 	memoClass->Lines->SaveToFile(L"class.ini");
+	memoExe->Lines->SaveToFile(L"executable.ini");
 
 	TIniFile *ini = new TIniFile(ChangeFileExt(Application->ExeName, ".ini"));
 	ini->WriteInteger(L"MAIN", L"Global", radioBtnGlobal->Checked ? 1 : 0);
@@ -105,12 +118,12 @@ void TForm1::Save() {
 
 // ---------------------------------------------------------------------------
 void TForm1::Load() {
-	try {
+	if (FileExists(L"title.ini"))
 		memoTitle->Lines->LoadFromFile(L"title.ini");
+	if (FileExists(L"class.ini"))
 		memoClass->Lines->LoadFromFile(L"class.ini");
-	}
-	catch (...) {
-	}
+	if (FileExists(L"executable.ini"))
+		memoExe->Lines->LoadFromFile(L"executable.ini");
 
 	TIniFile *ini = new TIniFile(ChangeFileExt(Application->ExeName, ".ini"));
 	if (ini->ReadInteger(L"MAIN", L"Global", 1) == 1)
@@ -129,26 +142,40 @@ void TForm1::Load() {
 bool TForm1::TargetProgram() {
 	bool rv = false;
 	HWND hw = ::GetForegroundWindow();
+	String query;
 	if (hw) {
 		// compare title
-		UnicodeString wtitle(GetWindowTitlePlus(hw));
-		for (int i = 0; i < memoTitle->Lines->Count; i++) {
-			if (wtitle.Pos(memoTitle->Lines->Strings[i])) {
-				rv = true;
-				break;
+		if (memoTitle->Lines->Count) {
+			query = GetWindowTitlePlus(hw);
+			for (int i = 0; i < memoTitle->Lines->Count; i++) {
+				if (query.Pos(memoTitle->Lines->Strings[i])) {
+					rv = true;
+					goto target;
+				}
 			}
 		}
 		// compare class
-		if (!rv) {
-			UnicodeString wclass(GetWindowClassPlus(hw));
+		if (memoClass->Lines->Count) {
+			query = GetWindowClassPlus(hw);
 			for (int i = 0; i < memoClass->Lines->Count; i++) {
-				if (wclass == memoClass->Lines->Strings[i]) {
+				if (query == memoClass->Lines->Strings[i]) {
 					rv = true;
-					break;
+					goto target;
+				}
+			}
+		}
+		// compare exe
+		if (memoExe->Lines->Count) {
+			query = GetWindowExePlus(hw);
+			for (int i = 0; i < memoExe->Lines->Count; i++) {
+				if (query.Pos(memoExe->Lines->Strings[i])) {
+					rv = true;
+					goto target;
 				}
 			}
 		}
 	}
+target:
 	return rv;
 }
 // ---------------------------------------------------------------------------

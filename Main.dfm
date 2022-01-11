@@ -146,10 +146,10 @@ object Form1: TForm1
     Top = 65
     Width = 287
     Height = 152
-    ActivePage = tabsheetClass
+    ActivePage = tabsheetExe
     TabOrder = 6
     object tabsheetTitle: TTabSheet
-      Caption = 'Window Title(s)'
+      Caption = 'Window Title'
       object memoTitle: TMemo
         Left = 0
         Top = 0
@@ -162,9 +162,23 @@ object Form1: TForm1
       end
     end
     object tabsheetClass: TTabSheet
-      Caption = 'Window Class(es)'
+      Caption = 'Window Class'
       ImageIndex = 1
       object memoClass: TMemo
+        Left = 0
+        Top = 0
+        Width = 279
+        Height = 124
+        Align = alClient
+        ScrollBars = ssBoth
+        TabOrder = 0
+        WordWrap = False
+      end
+    end
+    object tabsheetExe: TTabSheet
+      Caption = 'Executable'
+      ImageIndex = 2
+      object memoExe: TMemo
         Left = 0
         Top = 0
         Width = 279
