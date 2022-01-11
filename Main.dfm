@@ -35,7 +35,7 @@ object Form1: TForm1
     Hint = 'Hide always'
     Caption = 'Global'
     Checked = True
-    TabOrder = 0
+    TabOrder = 6
     TabStop = True
     OnClick = radioBtnGlobalClick
   end
@@ -46,7 +46,7 @@ object Form1: TForm1
     Height = 21
     Hint = 'Hide only when specific window is active'
     Caption = 'Program Specific'
-    TabOrder = 1
+    TabOrder = 7
     OnClick = radioBtnGlobalClick
   end
   object udTimeout: TUpDown
@@ -57,7 +57,7 @@ object Form1: TForm1
     Associate = editTimeout
     Min = 1
     Position = 3
-    TabOrder = 3
+    TabOrder = 9
   end
   object editTimeout: TEdit
     Left = 243
@@ -65,7 +65,7 @@ object Form1: TForm1
     Width = 42
     Height = 21
     ReadOnly = True
-    TabOrder = 2
+    TabOrder = 8
     Text = '3'
   end
   object btnSpy: TButton
@@ -75,7 +75,7 @@ object Form1: TForm1
     Height = 25
     Hint = 'Determine title and class of active window'
     Caption = 'Spy...'
-    TabOrder = 7
+    TabOrder = 1
     OnClick = btnSpyClick
   end
   object chkDebug: TCheckBox
@@ -84,7 +84,7 @@ object Form1: TForm1
     Width = 97
     Height = 17
     Caption = 'Debug sounds'
-    TabOrder = 10
+    TabOrder = 4
   end
   object btnHide: TButton
     Left = 300
@@ -93,7 +93,7 @@ object Form1: TForm1
     Height = 25
     Hint = 'Minimize to tray (Esc)'
     Caption = #8600' Hide '#8600
-    TabOrder = 9
+    TabOrder = 3
     OnClick = btnHideClick
   end
   object btnHelp: TButton
@@ -103,7 +103,7 @@ object Form1: TForm1
     Height = 25
     Hint = 'Information'
     Caption = '?'
-    TabOrder = 4
+    TabOrder = 10
     OnClick = btnHelpClick
   end
   object btnExit: TButton
@@ -113,7 +113,7 @@ object Form1: TForm1
     Height = 25
     Hint = 'Terminate program'
     Caption = #215' Exit '#215
-    TabOrder = 8
+    TabOrder = 2
     OnClick = btnExitClick
   end
   object chkStartToTray: TCheckBox
@@ -122,7 +122,7 @@ object Form1: TForm1
     Width = 134
     Height = 17
     Caption = 'Start minimized to tray'
-    TabOrder = 11
+    TabOrder = 5
   end
   object chkEnabled: TCheckBox
     Left = 133
@@ -138,7 +138,7 @@ object Form1: TForm1
     Font.Style = [fsBold]
     ParentFont = False
     State = cbChecked
-    TabOrder = 5
+    TabOrder = 11
     OnClick = chkEnabledClick
   end
   object pageControl1: TPageControl
@@ -147,9 +147,13 @@ object Form1: TForm1
     Width = 287
     Height = 152
     ActivePage = tabsheetExe
-    TabOrder = 6
+    TabOrder = 0
     object tabsheetTitle: TTabSheet
       Caption = 'Window Title'
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object memoTitle: TMemo
         Left = 0
         Top = 0
@@ -164,6 +168,10 @@ object Form1: TForm1
     object tabsheetClass: TTabSheet
       Caption = 'Window Class'
       ImageIndex = 1
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object memoClass: TMemo
         Left = 0
         Top = 0
