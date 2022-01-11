@@ -146,68 +146,33 @@ object Form1: TForm1
     Top = 65
     Width = 287
     Height = 152
-    ActivePage = tabsheetTitle
+    ActivePage = tabsheetClass
     TabOrder = 6
     object tabsheetTitle: TTabSheet
       Caption = 'Window Title(s)'
-      ExplicitTop = 38
-      ExplicitWidth = 211
-      ExplicitHeight = 165
       object memoTitle: TMemo
         Left = 0
         Top = 0
         Width = 279
         Height = 124
         Align = alClient
-        Lines.Strings = (
-          '1'
-          '2'
-          '3'
-          '4'
-          '5'
-          '6'
-          '7'
-          '8'
-          '9'
-          '10')
         ScrollBars = ssBoth
         TabOrder = 0
         WordWrap = False
-        ExplicitLeft = 71
-        ExplicitTop = 62
-        ExplicitWidth = 278
-        ExplicitHeight = 76
       end
     end
     object tabsheetClass: TTabSheet
       Caption = 'Window Class(es)'
       ImageIndex = 1
-      ExplicitWidth = 211
-      ExplicitHeight = 165
       object memoClass: TMemo
         Left = 0
         Top = 0
         Width = 279
         Height = 124
         Align = alClient
-        Lines.Strings = (
-          '1'
-          '2'
-          '3'
-          '4'
-          '5'
-          '6'
-          '7'
-          '8'
-          '9'
-          '10')
         ScrollBars = ssBoth
         TabOrder = 0
         WordWrap = False
-        ExplicitLeft = 71
-        ExplicitTop = 89
-        ExplicitWidth = 218
-        ExplicitHeight = 76
       end
     end
   end
