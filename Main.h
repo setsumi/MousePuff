@@ -1,18 +1,19 @@
-//---------------------------------------------------------------------------
+// ---------------------------------------------------------------------------
 
 #ifndef MainH
 #define MainH
-//---------------------------------------------------------------------------
+// ---------------------------------------------------------------------------
 #include <Classes.hpp>
 #include <Controls.hpp>
 #include <StdCtrls.hpp>
 #include <Forms.hpp>
 #include <ExtCtrls.hpp>
 #include <ComCtrls.hpp>
-//---------------------------------------------------------------------------
+
+// ---------------------------------------------------------------------------
 class TForm1 : public TForm
 {
-__published:	// IDE-managed Components
+__published: // IDE-managed Components
 	TTimer *timerPuff;
 	TRadioButton *radioBtnGlobal;
 	TRadioButton *radioBtnProgram;
@@ -34,6 +35,7 @@ __published:	// IDE-managed Components
 	TMemo *memoClass;
 	TTabSheet *tabsheetExe;
 	TMemo *memoExe;
+
 	void __fastcall FormCreate(TObject *Sender);
 	void __fastcall FormDestroy(TObject *Sender);
 	void __fastcall timerPuffTimer(TObject *Sender);
@@ -45,18 +47,20 @@ __published:	// IDE-managed Components
 	void __fastcall btnExitClick(TObject *Sender);
 	void __fastcall FormKeyDown(TObject *Sender, WORD &Key, TShiftState Shift);
 	void __fastcall chkEnabledClick(TObject *Sender);
-private:	// User declarations
+
+private: // User declarations
 	void Save();
 	void Load();
 	UnicodeString ProgramVer();
 
-public:		// User declarations
+public: // User declarations
 	__fastcall TForm1(TComponent* Owner);
 
 	bool TargetProgram();
 	void TimerReset();
 };
-//---------------------------------------------------------------------------
+
+// ---------------------------------------------------------------------------
 extern PACKAGE TForm1 *Form1;
-//---------------------------------------------------------------------------
+// ---------------------------------------------------------------------------
 #endif

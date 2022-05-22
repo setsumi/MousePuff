@@ -12,7 +12,8 @@
 #include <ComCtrls.hpp>
 
 // ---------------------------------------------------------------------------
-class TFormMain : public TForm {
+class TFormMain : public TForm
+{
 __published: // IDE-managed Components
 	TTimer *TimerPoll;
 	TMemo *memoInfo;

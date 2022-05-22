@@ -1,4 +1,4 @@
-//---------------------------------------------------------------------------
+// ---------------------------------------------------------------------------
 
 #include <vcl.h>
 #pragma hdrstop
@@ -6,9 +6,10 @@
 
 #include <Registry.hpp>
 
-//---------------------------------------------------------------------------
+// ---------------------------------------------------------------------------
 USEFORM("Main.cpp", Form1);
-//---------------------------------------------------------------------------
+
+// ---------------------------------------------------------------------------
 int WINAPI _tWinMain(HINSTANCE, HINSTANCE, LPTSTR, int)
 {
 	try
@@ -22,8 +23,10 @@ int WINAPI _tWinMain(HINSTANCE, HINSTANCE, LPTSTR, int)
 		Application->ShowMainForm = ini->ReadInteger(L"MAIN", L"StartToTray", 0) == 0;
 		delete ini;
 		// read command line (overrides config)
-		for (int i=1; i<=ParamCount(); i++) {
-			if (LowerCase(ParamStr(i)) == "-tray") {
+		for (int i = 1; i <= ParamCount(); i++)
+		{
+			if (LowerCase(ParamStr(i)) == "-tray")
+			{
 				Application->ShowMainForm = false;
 				break;
 			}
@@ -48,4 +51,4 @@ int WINAPI _tWinMain(HINSTANCE, HINSTANCE, LPTSTR, int)
 	}
 	return 0;
 }
-//---------------------------------------------------------------------------
+// ---------------------------------------------------------------------------
