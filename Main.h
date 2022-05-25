@@ -35,6 +35,7 @@ __published: // IDE-managed Components
 	TMemo *memoClass;
 	TTabSheet *tabsheetExe;
 	TMemo *memoExe;
+	TTimer *timerKb;
 
 	void __fastcall FormCreate(TObject *Sender);
 	void __fastcall FormDestroy(TObject *Sender);
@@ -47,6 +48,7 @@ __published: // IDE-managed Components
 	void __fastcall btnExitClick(TObject *Sender);
 	void __fastcall FormKeyDown(TObject *Sender, WORD &Key, TShiftState Shift);
 	void __fastcall chkEnabledClick(TObject *Sender);
+	void __fastcall timerKbTimer(TObject *Sender);
 
 private: // User declarations
 	void Save();

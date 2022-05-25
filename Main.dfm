@@ -150,10 +150,6 @@ object Form1: TForm1
     TabOrder = 0
     object tabsheetTitle: TTabSheet
       Caption = 'Window Title'
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object memoTitle: TMemo
         Left = 0
         Top = 0
@@ -168,10 +164,6 @@ object Form1: TForm1
     object tabsheetClass: TTabSheet
       Caption = 'Window Class'
       ImageIndex = 1
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object memoClass: TMemo
         Left = 0
         Top = 0
@@ -186,10 +178,6 @@ object Form1: TForm1
     object tabsheetExe: TTabSheet
       Caption = 'Executable'
       ImageIndex = 2
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object memoExe: TMemo
         Left = 0
         Top = 0
@@ -239,5 +227,12 @@ object Form1: TForm1
     OnClick = trayIconClick
     Left = 92
     Top = 124
+  end
+  object timerKb: TTimer
+    Enabled = False
+    Interval = 300
+    OnTimer = timerKbTimer
+    Left = 182
+    Top = 123
   end
 end

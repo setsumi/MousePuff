@@ -12,14 +12,8 @@
 TForm1 *Form1;
 
 HINSTANCE hInstance = NULL;
-HHOOK hMouseHook, hKbdHook;
+HHOOK hMouseHook = NULL, hKbdHook = NULL;
 HCURSOR hCurBlank = NULL;
-bool CurIsVisible = true; // assuming current state of cursor (set in MyShowCursor())
-int Emergency = 0; // force show cursor after some amount of mouse movement
-int EmergencyMax = 200;
-bool KeybTriggered = false; // flag when keyboard activated re-hide
-bool MouseTriggered = false; // flag when mouse button activated hide
-bool AppEnabled = true; // application function is active
 
 String GetWindowClassPlus(HWND hwnd)
 {
@@ -88,8 +82,8 @@ String TForm1::ProgramVer()
 			}*lpTranslate;
 
 			// Read first language and code page
-			if (VerQueryValue(data, L"\\VarFileInfo\\Translation", (LPVOID*)&lpTranslate,
-				&ilen))
+			if (VerQueryValue(data, L"\\VarFileInfo\\Translation",
+				(LPVOID*)&lpTranslate, &ilen))
 			{
 				String str;
 				str.printf(L"\\StringFileInfo\\%04x%04x\\FileVersion",
@@ -126,7 +120,6 @@ void TForm1::Save()
 	ini->WriteInteger(L"MAIN", L"Global", radioBtnGlobal->Checked ? 1 : 0);
 	ini->WriteInteger(L"MAIN", L"Timeout", udTimeout->Position);
 	ini->WriteInteger(L"MAIN", L"StartToTray", chkStartToTray->Checked ? 1 : 0);
-	ini->WriteInteger(L"MAIN", L"EmergencyMax", EmergencyMax);
 	ini->WriteInteger(L"MAIN", L"WinPageIndex", pageControl1->TabIndex);
 	delete ini;
 }
@@ -149,7 +142,6 @@ void TForm1::Load()
 	udTimeout->Position = ini->ReadInteger(L"MAIN", L"Timeout", 3);
 	TimerReset();
 	chkStartToTray->Checked = ini->ReadInteger(L"MAIN", L"StartToTray", 0) == 1;
-	EmergencyMax = ini->ReadInteger(L"MAIN", L"EmergencyMax", 200);
 	pageControl1->TabIndex = ini->ReadInteger(L"MAIN", L"WinPageIndex", 0);
 	delete ini;
 }
@@ -206,29 +198,35 @@ target:
 	return rv;
 }
 // ---------------------------------------------------------------------------
-DWORD cursorID[] =
+const DWORD cursorID[] =
 {OCR_APPSTARTING, OCR_NORMAL, OCR_CROSS, OCR_HAND, OCR_IBEAM, OCR_NO, OCR_SIZEALL,
 	OCR_SIZENESW, OCR_SIZENS, OCR_SIZENWSE, OCR_SIZEWE, OCR_UP, OCR_WAIT,
 	32651 /* OCR_HELP */ };
 
-void MyShowCursor(bool show)
+void MyShowCursor(bool show, bool force = false)
 {
-	// debug
-	if (Form1->chkDebug->Checked)
-	{
-		MessageBeep(show ? 0 : MB_ICONASTERISK);
-	}
+	static bool visible = true;
 
-	CurIsVisible = show;
-	if (show)
+	if (show != visible || force)
 	{
-		SystemParametersInfo(SPI_SETCURSORS, 0, NULL, 0);
-	}
-	else
-	{
-		for (size_t i = 0; i < (sizeof(cursorID) / sizeof(*cursorID)); i++)
+		visible = show;
+
+		// debug sound
+		if (Form1->chkDebug->Checked)
 		{
-			SetSystemCursor(CopyCursor(hCurBlank), cursorID[i]);
+			MessageBeep(show ? 0 : MB_ICONASTERISK);
+		}
+
+		if (show)
+		{
+			SystemParametersInfo(SPI_SETCURSORS, 0, NULL, 0);
+		}
+		else
+		{
+			for (size_t i = 0; i < (sizeof(cursorID) / sizeof(*cursorID)); i++)
+			{
+				SetSystemCursor(CopyCursor(hCurBlank), cursorID[i]);
+			}
 		}
 	}
 }
@@ -236,29 +234,10 @@ void MyShowCursor(bool show)
 // ---------------------------------------------------------------------------
 LRESULT CALLBACK LLHookMouseProc(int nCode, WPARAM wParam, LPARAM lParam)
 {
-	if (AppEnabled && nCode == HC_ACTION)
-	{ // allowed to process message
-		if (wParam == WM_MOUSEMOVE)
-		{ // show cursor on mouse move
-			Form1->timerPuff->Enabled = false;
-			if (!CurIsVisible || KeybTriggered || MouseTriggered)
-			{
-				KeybTriggered = MouseTriggered = false;
-				MyShowCursor(true);
-			}
-			else if (++Emergency > EmergencyMax)
-			{
-				Emergency = 0;
-				MyShowCursor(true);
-			}
-			Form1->TimerReset();
-		} // start hide sequence on mouse button (for switching apps by only clicking without moving)
-		else if (wParam == WM_LBUTTONUP || wParam == WM_RBUTTONUP)
-		{
-			MouseTriggered = true;
-			CurIsVisible = true;
-			Form1->TimerReset();
-		}
+	if (nCode == HC_ACTION) // allowed to process message
+	{
+		Form1->TimerReset();
+		MyShowCursor(true);
 	}
 	return CallNextHookEx(hMouseHook, nCode, wParam, lParam);
 }
@@ -266,25 +245,54 @@ LRESULT CALLBACK LLHookMouseProc(int nCode, WPARAM wParam, LPARAM lParam)
 // ---------------------------------------------------------------------------
 LRESULT CALLBACK LLHookKeyboardProc(int nCode, WPARAM wParam, LPARAM lParam)
 {
-	if (AppEnabled && !(nCode < 0))
-	{ // allowed to process message now
-		if (nCode == HC_ACTION)
+	if (nCode == HC_ACTION) // allowed to process message now
+	{
+		if (!Form1->radioBtnGlobal->Checked) // ignore keyboard in global mode
 		{
-			// show cursor on alt-tabbing to another app
-			if (!Form1->radioBtnGlobal->Checked && !Form1->TargetProgram())
-			{
-				if (!CurIsVisible)
-				{
-					MyShowCursor(true);
-				}
-			}
-			// start re-hide sequence on keyboard (in case some operation make cursor reappear)
-			KeybTriggered = true;
-			CurIsVisible = true;
-			Form1->TimerReset();
+			if (!Form1->timerKb->Enabled) // suppress fast keyboard processind
+					Form1->timerKb->Enabled = true;
 		}
 	}
 	return CallNextHookEx(hKbdHook, nCode, wParam, lParam);
+}
+
+// ---------------------------------------------------------------------------
+void MyUnhook()
+{
+	// release hooks
+	if (hMouseHook)
+	{
+		UnhookWindowsHookEx(hMouseHook);
+		hMouseHook = NULL;
+	}
+	if (hKbdHook)
+	{
+		UnhookWindowsHookEx(hKbdHook);
+		hKbdHook = NULL;
+	}
+}
+
+// ---------------------------------------------------------------------------
+void MyHook()
+{
+	MyUnhook();
+	// set up hooks
+	hMouseHook = SetWindowsHookEx(WH_MOUSE_LL, (HOOKPROC)LLHookMouseProc,
+		GetModuleHandle(NULL), NULL);
+	if (!hMouseHook)
+		throw Exception(L"SetWindowsHookEx(WH_MOUSE_LL) failed");
+	hKbdHook = SetWindowsHookEx(WH_KEYBOARD_LL, (HOOKPROC)LLHookKeyboardProc,
+		GetModuleHandle(NULL), NULL);
+	if (!hKbdHook)
+		throw Exception(L"SetWindowsHookEx(WH_KEYBOARD_LL) failed");
+}
+
+// ---------------------------------------------------------------------------
+void __fastcall TForm1::timerKbTimer(TObject *Sender)
+{
+	timerKb->Enabled = false;
+	TimerReset();
+	MyShowCursor(!TargetProgram());
 }
 
 // ---------------------------------------------------------------------------
@@ -292,15 +300,7 @@ void __fastcall TForm1::FormCreate(TObject *Sender)
 {
 	hInstance = (HINSTANCE)GetWindowLong(Handle, GWL_HINSTANCE);
 	// set up hooks
-	hMouseHook = SetWindowsHookEx(WH_MOUSE_LL, (HOOKPROC)LLHookMouseProc,
-		GetModuleHandle(NULL), NULL);
-	if (!hMouseHook)
-		throw Exception(L"INIT: SetWindowsHookEx(WH_MOUSE_LL) failed");
-	hKbdHook = SetWindowsHookEx(WH_KEYBOARD_LL, (HOOKPROC)LLHookKeyboardProc,
-		GetModuleHandle(NULL), NULL);
-	if (!hKbdHook)
-		throw Exception(L"INIT: SetWindowsHookEx(WH_KEYBOARD_LL) failed");
-
+	MyHook();
 	// load config
 	Load();
 	// load blank cursor fromk resource
@@ -312,12 +312,9 @@ void __fastcall TForm1::FormCreate(TObject *Sender)
 // ---------------------------------------------------------------------------
 void __fastcall TForm1::FormDestroy(TObject *Sender)
 {
-	// release hooks
-	UnhookWindowsHookEx(hMouseHook);
-	UnhookWindowsHookEx(hKbdHook);
-
+	MyUnhook();
 	Save();
-	MyShowCursor(true);
+	MyShowCursor(true, true);
 	DestroyCursor(hCurBlank);
 }
 
@@ -332,24 +329,21 @@ void __fastcall TForm1::timerPuffTimer(TObject *Sender)
 	timerPuff->Enabled = false;
 	if (radioBtnGlobal->Checked || TargetProgram())
 	{
-		if (CurIsVisible)
-		{
-			MyShowCursor(false);
-		}
+		MyShowCursor(false);
 	}
 }
 
 // ---------------------------------------------------------------------------
 void __fastcall TForm1::trayIconClick(TObject *Sender)
 {
-	if (Visible)
+	if (this->Visible)
 	{
-		Hide();
+		this->Hide();
 	}
 	else
 	{
-		Show();
-		SetForegroundWindow(Handle);
+		this->Show();
+		::SetForegroundWindow(Handle);
 	}
 }
 
@@ -401,10 +395,15 @@ void __fastcall TForm1::FormKeyDown(TObject *Sender, WORD &Key, TShiftState Shif
 void __fastcall TForm1::chkEnabledClick(TObject *Sender)
 {
 	timerPuff->Enabled = false;
-	AppEnabled = chkEnabled->Checked;
-	if (!AppEnabled)
+	if (!chkEnabled->Checked)
 	{
-		MyShowCursor(true);
+		MyUnhook();
+		MyShowCursor(true, true);
+	}
+	else
+	{
+		MyHook();
+		TimerReset();
 	}
 }
 
