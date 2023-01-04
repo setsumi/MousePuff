@@ -138,9 +138,10 @@
         <AppEnableRuntimeThemes>true</AppEnableRuntimeThemes>
         <AppEnableHighDPI>true</AppEnableHighDPI>
         <Defines>NDEBUG;$(Defines)</Defines>
-        <VerInfo_Keys>CompanyName=;FileDescription=MousePuff by furniture;FileVersion=1.6.0.0;InternalName=;LegalCopyright=;LegalTrademarks=;OriginalFilename=;ProductName=;ProductVersion=1.6.0.0;Comments=;ProgramID=</VerInfo_Keys>
+        <VerInfo_Keys>CompanyName=;FileDescription=MousePuff by furniture;FileVersion=1.6.1.0;InternalName=;LegalCopyright=;LegalTrademarks=;OriginalFilename=;ProductName=;ProductVersion=1.6.1.0;Comments=;ProgramID=</VerInfo_Keys>
         <VerInfo_MinorVer>6</VerInfo_MinorVer>
         <AppExecutionLevel>requireAdministrator</AppExecutionLevel>
+        <VerInfo_Release>1</VerInfo_Release>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Cfg_2_Win64)'!=''">
         <Defines>NDEBUG;$(Defines)</Defines>
@@ -155,7 +156,7 @@
             <ResourceId>Cursor_Blank</ResourceId>
         </RcItem>
         <CppCompile Include="Main.cpp">
-            <Form>Form1</Form>
+            <Form>FormMousePuff1</Form>
             <DependentOn>Main.h</DependentOn>
             <BuildOrder>2</BuildOrder>
         </CppCompile>

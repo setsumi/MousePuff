@@ -11,7 +11,7 @@
 #include <ComCtrls.hpp>
 
 // ---------------------------------------------------------------------------
-class TForm1 : public TForm
+class TFormMousePuff1 : public TForm
 {
 __published: // IDE-managed Components
 	TTimer *timerPuff;
@@ -36,6 +36,8 @@ __published: // IDE-managed Components
 	TTabSheet *tabsheetExe;
 	TMemo *memoExe;
 	TTimer *timerKb;
+	TLabel *Label1;
+	TCheckBox *chkHideTrayIcon;
 
 	void __fastcall FormCreate(TObject *Sender);
 	void __fastcall FormDestroy(TObject *Sender);
@@ -50,19 +52,22 @@ __published: // IDE-managed Components
 	void __fastcall chkEnabledClick(TObject *Sender);
 	void __fastcall timerKbTimer(TObject *Sender);
 
+protected:
+	void __fastcall WndProc(TMessage& Message);
+
 private: // User declarations
 	void Save();
 	void Load();
 	UnicodeString ProgramVer();
 
 public: // User declarations
-	__fastcall TForm1(TComponent* Owner);
+	__fastcall TFormMousePuff1(TComponent* Owner);
 
 	bool TargetProgram();
 	void TimerReset();
 };
 
 // ---------------------------------------------------------------------------
-extern PACKAGE TForm1 *Form1;
+extern PACKAGE TFormMousePuff1 *FormMousePuff1;
 // ---------------------------------------------------------------------------
 #endif

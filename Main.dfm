@@ -1,4 +1,4 @@
-object Form1: TForm1
+object FormMousePuff1: TFormMousePuff1
   Left = 0
   Top = 0
   BorderIcons = [biSystemMenu]
@@ -27,129 +27,27 @@ object Form1: TForm1
     Height = 13
     Caption = 'Hide after idling (sec)'
   end
-  object radioBtnGlobal: TRadioButton
-    Left = 12
-    Top = 12
-    Width = 105
-    Height = 18
-    Hint = 'Hide always'
-    Caption = 'Global'
-    Checked = True
-    TabOrder = 6
-    TabStop = True
-    OnClick = radioBtnGlobalClick
-  end
-  object radioBtnProgram: TRadioButton
-    Left = 12
-    Top = 38
-    Width = 105
-    Height = 21
-    Hint = 'Hide only when specific window is active'
-    Caption = 'Program Specific'
-    TabOrder = 7
-    OnClick = radioBtnGlobalClick
-  end
-  object udTimeout: TUpDown
-    Left = 285
-    Top = 10
-    Width = 16
-    Height = 21
-    Associate = editTimeout
-    Min = 1
-    Position = 3
-    TabOrder = 9
-  end
-  object editTimeout: TEdit
-    Left = 243
-    Top = 10
-    Width = 42
-    Height = 21
-    ReadOnly = True
-    TabOrder = 8
-    Text = '3'
-  end
-  object btnSpy: TButton
-    Left = 301
-    Top = 65
-    Width = 53
-    Height = 25
-    Hint = 'Determine title and class of active window'
-    Caption = 'Spy...'
-    TabOrder = 1
-    OnClick = btnSpyClick
-  end
-  object chkDebug: TCheckBox
-    Left = 12
-    Top = 223
-    Width = 97
-    Height = 17
-    Caption = 'Debug sounds'
-    TabOrder = 4
-  end
-  object btnHide: TButton
-    Left = 300
-    Top = 215
-    Width = 53
-    Height = 25
-    Hint = 'Minimize to tray (Esc)'
-    Caption = #8600' Hide '#8600
-    TabOrder = 3
-    OnClick = btnHideClick
-  end
-  object btnHelp: TButton
-    Left = 315
-    Top = 8
-    Width = 26
-    Height = 25
-    Hint = 'Information'
-    Caption = '?'
-    TabOrder = 10
-    OnClick = btnHelpClick
-  end
-  object btnExit: TButton
-    Left = 301
-    Top = 163
-    Width = 53
-    Height = 25
-    Hint = 'Terminate program'
-    Caption = #215' Exit '#215
-    TabOrder = 2
-    OnClick = btnExitClick
-  end
-  object chkStartToTray: TCheckBox
-    Left = 151
-    Top = 223
-    Width = 134
-    Height = 17
-    Caption = 'Start minimized to tray'
-    TabOrder = 5
-  end
-  object chkEnabled: TCheckBox
-    Left = 133
-    Top = 39
-    Width = 124
-    Height = 17
-    Caption = 'Enabled (Ctrl+E)'
-    Checked = True
-    Font.Charset = DEFAULT_CHARSET
-    Font.Color = clWindowText
-    Font.Height = -11
-    Font.Name = 'Tahoma'
-    Font.Style = [fsBold]
-    ParentFont = False
-    State = cbChecked
-    TabOrder = 11
-    OnClick = chkEnabledClick
+  object Label1: TLabel
+    Left = 259
+    Top = 70
+    Width = 36
+    Height = 13
+    Caption = '------->'
   end
   object pageControl1: TPageControl
     Left = 8
     Top = 65
     Width = 287
     Height = 152
-    ActivePage = tabsheetExe
+    ActivePage = tabsheetClass
     TabOrder = 0
     object tabsheetTitle: TTabSheet
+      Hint = 'Full or partial window title'
       Caption = 'Window Title'
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object memoTitle: TMemo
         Left = 0
         Top = 0
@@ -176,8 +74,13 @@ object Form1: TForm1
       end
     end
     object tabsheetExe: TTabSheet
+      Hint = 'Full or partial exe path'
       Caption = 'Executable'
       ImageIndex = 2
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object memoExe: TMemo
         Left = 0
         Top = 0
@@ -189,6 +92,132 @@ object Form1: TForm1
         WordWrap = False
       end
     end
+  end
+  object radioBtnGlobal: TRadioButton
+    Left = 12
+    Top = 12
+    Width = 105
+    Height = 18
+    Hint = 'Hide always'
+    Caption = 'Global'
+    Checked = True
+    TabOrder = 7
+    TabStop = True
+    OnClick = radioBtnGlobalClick
+  end
+  object radioBtnProgram: TRadioButton
+    Left = 12
+    Top = 38
+    Width = 105
+    Height = 21
+    Hint = 'Hide only when specific window is active'
+    Caption = 'Program Specific'
+    TabOrder = 8
+    OnClick = radioBtnGlobalClick
+  end
+  object udTimeout: TUpDown
+    Left = 285
+    Top = 10
+    Width = 16
+    Height = 21
+    Associate = editTimeout
+    Min = 1
+    Position = 3
+    TabOrder = 10
+  end
+  object editTimeout: TEdit
+    Left = 243
+    Top = 10
+    Width = 42
+    Height = 21
+    ReadOnly = True
+    TabOrder = 9
+    Text = '3'
+  end
+  object btnSpy: TButton
+    Left = 301
+    Top = 65
+    Width = 53
+    Height = 25
+    Hint = 'Determine title, class and executable of windows'
+    Caption = 'Spy...'
+    TabOrder = 1
+    OnClick = btnSpyClick
+  end
+  object chkDebug: TCheckBox
+    Left = 297
+    Top = 112
+    Width = 57
+    Height = 25
+    Caption = 'Debug sounds'
+    TabOrder = 4
+    Visible = False
+    WordWrap = True
+  end
+  object btnHide: TButton
+    Left = 300
+    Top = 215
+    Width = 53
+    Height = 25
+    Hint = 'Hide (Esc)'
+    Caption = #8600' Hide '#8600
+    TabOrder = 3
+    OnClick = btnHideClick
+  end
+  object btnHelp: TButton
+    Left = 315
+    Top = 8
+    Width = 26
+    Height = 25
+    Hint = 'Help information (F1)'
+    Caption = '?'
+    TabOrder = 11
+    OnClick = btnHelpClick
+  end
+  object btnExit: TButton
+    Left = 301
+    Top = 163
+    Width = 53
+    Height = 25
+    Hint = 'Terminate program (Alt+F4)'
+    Caption = #215' Exit '#215
+    TabOrder = 2
+    OnClick = btnExitClick
+  end
+  object chkStartToTray: TCheckBox
+    Left = 151
+    Top = 223
+    Width = 134
+    Height = 17
+    Caption = 'Start minimized to tray'
+    TabOrder = 6
+  end
+  object chkEnabled: TCheckBox
+    Left = 133
+    Top = 39
+    Width = 124
+    Height = 17
+    Hint = 'Deactivate program function'
+    Caption = 'Enabled (Ctrl+E)'
+    Checked = True
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -11
+    Font.Name = 'Tahoma'
+    Font.Style = [fsBold]
+    ParentFont = False
+    State = cbChecked
+    TabOrder = 12
+    OnClick = chkEnabledClick
+  end
+  object chkHideTrayIcon: TCheckBox
+    Left = 32
+    Top = 223
+    Width = 97
+    Height = 17
+    Hint = 'Hint: In case of completely hidden, run program again to show'
+    Caption = 'Hide tray icon'
+    TabOrder = 5
   end
   object timerPuff: TTimer
     Enabled = False
@@ -223,7 +252,6 @@ object Form1: TForm1
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
       000000000000000000000000000000000000000000000000000000000000}
-    Visible = True
     OnClick = trayIconClick
     Left = 92
     Top = 124

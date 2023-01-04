@@ -23,6 +23,8 @@ object FormMain: TFormMain
     Height = 124
     Align = alClient
     BevelInner = bvLowered
+    Lines.Strings = (
+      'Activate the target window...')
     ScrollBars = ssBoth
     TabOrder = 0
     WordWrap = False

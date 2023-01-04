@@ -138,7 +138,7 @@ void __fastcall TFormMain::TimerPollTimer(TObject* /* Sender */)
 		prevWnd = wnd;
 		memoInfo->Lines->Clear();
 		memoInfo->Lines->Add
-			(L">>>>>>>>>> Window Title | Class | Image file | Dimensions <<<<<<<<");
+			(L">>>>>>>>>> Window Title | Class | Executable path | Dimensions <<<<<<<<");
 
 		memoInfo->Lines->Add(GetWindowTitlePlus(wnd).Trim());
 

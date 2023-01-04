@@ -9,11 +9,12 @@
 // ---------------------------------------------------------------------------
 #pragma package(smart_init)
 #pragma resource "*.dfm"
-TForm1 *Form1;
+TFormMousePuff1 *FormMousePuff1;
 
 HINSTANCE hInstance = NULL;
 HHOOK hMouseHook = NULL, hKbdHook = NULL;
 HCURSOR hCurBlank = NULL;
+HWND hWindow = NULL;
 
 String GetWindowClassPlus(HWND hwnd)
 {
@@ -64,7 +65,7 @@ void RunExe(String cmdline)
 }
 
 // ---------------------------------------------------------------------------
-String TForm1::ProgramVer()
+String TFormMousePuff1::ProgramVer()
 {
 	String ret;
 	DWORD hnd = 0, vis;
@@ -102,7 +103,7 @@ String TForm1::ProgramVer()
 }
 
 // ---------------------------------------------------------------------------
-void TForm1::TimerReset()
+void TFormMousePuff1::TimerReset()
 {
 	timerPuff->Enabled = false;
 	timerPuff->Interval = udTimeout->Position * 1000;
@@ -110,7 +111,7 @@ void TForm1::TimerReset()
 }
 
 // ---------------------------------------------------------------------------
-void TForm1::Save()
+void TFormMousePuff1::Save()
 {
 	memoTitle->Lines->SaveToFile(L"title.ini");
 	memoClass->Lines->SaveToFile(L"class.ini");
@@ -121,11 +122,12 @@ void TForm1::Save()
 	ini->WriteInteger(L"MAIN", L"Timeout", udTimeout->Position);
 	ini->WriteInteger(L"MAIN", L"StartToTray", chkStartToTray->Checked ? 1 : 0);
 	ini->WriteInteger(L"MAIN", L"WinPageIndex", pageControl1->TabIndex);
+	ini->WriteInteger(L"MAIN", L"HideTrayIcon", chkHideTrayIcon->Checked ? 1 : 0);
 	delete ini;
 }
 
 // ---------------------------------------------------------------------------
-void TForm1::Load()
+void TFormMousePuff1::Load()
 {
 	if (FileExists(L"title.ini"))
 		memoTitle->Lines->LoadFromFile(L"title.ini");
@@ -143,11 +145,12 @@ void TForm1::Load()
 	TimerReset();
 	chkStartToTray->Checked = ini->ReadInteger(L"MAIN", L"StartToTray", 0) == 1;
 	pageControl1->TabIndex = ini->ReadInteger(L"MAIN", L"WinPageIndex", 0);
+	chkHideTrayIcon->Checked = ini->ReadInteger(L"MAIN", L"HideTrayIcon", 0) == 1;
 	delete ini;
 }
 
 // ---------------------------------------------------------------------------
-bool TForm1::TargetProgram()
+bool TFormMousePuff1::TargetProgram()
 {
 	bool rv = false;
 	HWND hw = ::GetForegroundWindow();
@@ -212,7 +215,7 @@ void MyShowCursor(bool show, bool force = false)
 		visible = show;
 
 		// debug sound
-		if (Form1->chkDebug->Checked)
+		if (FormMousePuff1->chkDebug->Checked)
 		{
 			MessageBeep(show ? 0 : MB_ICONASTERISK);
 		}
@@ -236,7 +239,7 @@ LRESULT CALLBACK LLHookMouseProc(int nCode, WPARAM wParam, LPARAM lParam)
 {
 	if (nCode == HC_ACTION) // allowed to process message
 	{
-		Form1->TimerReset();
+		FormMousePuff1->TimerReset();
 		MyShowCursor(true);
 	}
 	return CallNextHookEx(hMouseHook, nCode, wParam, lParam);
@@ -247,10 +250,10 @@ LRESULT CALLBACK LLHookKeyboardProc(int nCode, WPARAM wParam, LPARAM lParam)
 {
 	if (nCode == HC_ACTION) // allowed to process message now
 	{
-		if (!Form1->radioBtnGlobal->Checked) // ignore keyboard in global mode
+		if (!FormMousePuff1->radioBtnGlobal->Checked) // ignore keyboard in global mode
 		{
-			if (!Form1->timerKb->Enabled) // suppress fast keyboard processind
-					Form1->timerKb->Enabled = true;
+			if (!FormMousePuff1->timerKb->Enabled) // suppress fast keyboard processind
+					FormMousePuff1->timerKb->Enabled = true;
 		}
 	}
 	return CallNextHookEx(hKbdHook, nCode, wParam, lParam);
@@ -288,7 +291,7 @@ void MyHook()
 }
 
 // ---------------------------------------------------------------------------
-void __fastcall TForm1::timerKbTimer(TObject *Sender)
+void __fastcall TFormMousePuff1::timerKbTimer(TObject *Sender)
 {
 	timerKb->Enabled = false;
 	TimerReset();
@@ -296,21 +299,58 @@ void __fastcall TForm1::timerKbTimer(TObject *Sender)
 }
 
 // ---------------------------------------------------------------------------
-void __fastcall TForm1::FormCreate(TObject *Sender)
+static BOOL CALLBACK enumWindowCallback(HWND hWnd, LPARAM lparam)
+{
+	// Activate another instance if already running
+	if (hWnd != hWindow && SameStr(GetWindowClassPlus(hWnd), L"TFormMousePuff1"))
+	{
+		if (!IsWindowVisible(hWnd))
+			ShowWindow(hWnd, SW_SHOW);
+		SetForegroundWindow(hWnd);
+		exit(0); // Terminate myself
+	}
+	return TRUE;
+}
+
+void __fastcall TFormMousePuff1::FormCreate(TObject *Sender)
 {
 	hInstance = (HINSTANCE)GetWindowLong(Handle, GWL_HINSTANCE);
+	hWindow = Handle;
+
+	// Check if another instance is already running
+	EnumWindows(enumWindowCallback, NULL);
+
+#ifdef _DEBUG
+	chkDebug->Visible = true;
+#endif
+
 	// set up hooks
 	MyHook();
 	// load config
 	Load();
-	// load blank cursor fromk resource
+	// read command line (overrides config)
+	bool noicon = false;
+	for (int i = 1; i <= ParamCount(); i++)
+	{
+		if (LowerCase(ParamStr(i)) == "-noicon")
+		{
+			noicon = true;
+			break;
+		}
+	}
+	if (!noicon) // if no parameter then decide by config
+	{
+		trayIcon->Visible = !chkHideTrayIcon->Checked;
+	}
+
+	// load blank cursor from resource
 	hCurBlank = LoadCursor(hInstance, L"Cursor_Blank");
 	if (hCurBlank == NULL)
 		throw Exception(L"INIT: LoadCursor() failed");
 }
 
 // ---------------------------------------------------------------------------
-void __fastcall TForm1::FormDestroy(TObject *Sender)
+void __fastcall TFormMousePuff1::FormDestroy(TObject *Sender)
 {
 	MyUnhook();
 	Save();
@@ -319,12 +359,12 @@ void __fastcall TForm1::FormDestroy(TObject *Sender)
 }
 
 // ---------------------------------------------------------------------------
-__fastcall TForm1::TForm1(TComponent* Owner) : TForm(Owner)
+__fastcall TFormMousePuff1::TFormMousePuff1(TComponent* Owner) : TForm(Owner)
 {
 }
 
 // ---------------------------------------------------------------------------
-void __fastcall TForm1::timerPuffTimer(TObject *Sender)
+void __fastcall TFormMousePuff1::timerPuffTimer(TObject *Sender)
 {
 	timerPuff->Enabled = false;
 	if (radioBtnGlobal->Checked || TargetProgram())
@@ -334,7 +374,7 @@ void __fastcall TForm1::timerPuffTimer(TObject *Sender)
 }
 
 // ---------------------------------------------------------------------------
-void __fastcall TForm1::trayIconClick(TObject *Sender)
+void __fastcall TFormMousePuff1::trayIconClick(TObject *Sender)
 {
 	if (this->Visible)
 	{
@@ -348,38 +388,43 @@ void __fastcall TForm1::trayIconClick(TObject *Sender)
 }
 
 // ---------------------------------------------------------------------------
-void __fastcall TForm1::btnSpyClick(TObject *Sender)
+void __fastcall TFormMousePuff1::btnSpyClick(TObject *Sender)
 {
 	RunExe(L"Spy.exe");
 }
 
 // ---------------------------------------------------------------------------
-void __fastcall TForm1::radioBtnGlobalClick(TObject *Sender)
+void __fastcall TFormMousePuff1::radioBtnGlobalClick(TObject *Sender)
 {
 	TimerReset();
 }
 
 // ---------------------------------------------------------------------------
-void __fastcall TForm1::btnHideClick(TObject *Sender)
+void __fastcall TFormMousePuff1::btnHideClick(TObject *Sender)
 {
 	Hide();
 }
 
 // ---------------------------------------------------------------------------
-void __fastcall TForm1::btnHelpClick(TObject *Sender)
+void __fastcall TFormMousePuff1::btnHelpClick(TObject *Sender)
 {
-	ShowMessage(Caption + L"\nversion " + ProgramVer() +
-		L"\n\nCommand line parameters:\n-tray      start minimized to tray");
+	MessageBox(Handle, (Caption + L"\nversion " + ProgramVer() +
+		L"\n\nCommand line parameters:\n-tray\tstart minimized to tray" +
+		L"\n-noicon\tdo not display tray icon" +
+		L"\n\nNote 1: If both parameters are used, run program again to show its window." +
+		L"\nNote 2: Command line parameters override UI options.").w_str(),
+		L"Information", MB_OK | MB_ICONINFORMATION);
 }
 
 // ---------------------------------------------------------------------------
-void __fastcall TForm1::btnExitClick(TObject *Sender)
+void __fastcall TFormMousePuff1::btnExitClick(TObject *Sender)
 {
 	Close();
 }
 
 // ---------------------------------------------------------------------------
-void __fastcall TForm1::FormKeyDown(TObject *Sender, WORD &Key, TShiftState Shift)
+void __fastcall TFormMousePuff1::FormKeyDown(TObject *Sender, WORD &Key,
+	TShiftState Shift)
 {
 	if (Key == VK_ESCAPE)
 	{
@@ -389,10 +434,14 @@ void __fastcall TForm1::FormKeyDown(TObject *Sender, WORD &Key, TShiftState Shif
 	{
 		chkEnabled->Checked = !chkEnabled->Checked;
 	}
+	else if (Key == VK_F1)
+	{
+		btnHelpClick(NULL);
+	}
 }
 
 // ---------------------------------------------------------------------------
-void __fastcall TForm1::chkEnabledClick(TObject *Sender)
+void __fastcall TFormMousePuff1::chkEnabledClick(TObject *Sender)
 {
 	timerPuff->Enabled = false;
 	if (!chkEnabled->Checked)
@@ -407,4 +456,13 @@ void __fastcall TForm1::chkEnabledClick(TObject *Sender)
 	}
 }
 
+// ---------------------------------------------------------------------------
+void __fastcall TFormMousePuff1::WndProc(TMessage& Message)
+{
+	if (Message.Msg == WM_SHOWWINDOW && Message.WParam == TRUE)
+	{
+		Show(); // repair VCL on raw ShowWindow() call
+	}
+	TForm::WndProc(Message);
+}
 // ---------------------------------------------------------------------------

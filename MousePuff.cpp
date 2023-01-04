@@ -7,7 +7,7 @@
 #include <Registry.hpp>
 
 // ---------------------------------------------------------------------------
-USEFORM("Main.cpp", Form1);
+USEFORM("Main.cpp", FormMousePuff1);
 
 // ---------------------------------------------------------------------------
 int WINAPI _tWinMain(HINSTANCE, HINSTANCE, LPTSTR, int)
@@ -16,7 +16,7 @@ int WINAPI _tWinMain(HINSTANCE, HINSTANCE, LPTSTR, int)
 	{
 		Application->Initialize();
 		Application->MainFormOnTaskBar = true;
-		Application->CreateForm(__classid(TForm1), &Form1);
+		Application->CreateForm(__classid(TFormMousePuff1), &FormMousePuff1);
 
 		// read config
 		TIniFile *ini = new TIniFile(ChangeFileExt(Application->ExeName, ".ini"));
