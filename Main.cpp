@@ -6,6 +6,7 @@
 #include <Registry.hpp>
 
 #include "Main.h"
+#include "OwnedWnd.h"
 // ---------------------------------------------------------------------------
 #pragma package(smart_init)
 #pragma resource "*.dfm"
@@ -200,7 +201,28 @@ bool TFormMousePuff1::TargetProgram()
 target:
 	return rv;
 }
+
 // ---------------------------------------------------------------------------
+HWND SetWindowOwner(HWND hwnd, HWND hwndOwner)
+{
+	if ((GetWindowLong(hwnd, GWL_STYLE) & WS_CHILD) || (GetWindowLong(hwndOwner,
+		GWL_STYLE) & WS_CHILD))
+		return NULL;
+	return (HWND)SetWindowLongPtr(hwnd, GWLP_HWNDPARENT, (LONG_PTR)hwndOwner);
+}
+
+void MyProcShowCursor(bool show)
+{
+	if (!FormOwnedWnd)
+		return;
+	HWND hw = GetForegroundWindow();
+	SetWindowOwner(FormOwnedWnd->Handle, hw);
+	if (show)
+		while (ShowCursor(TRUE) <= -1);
+	else
+		while (ShowCursor(FALSE) >= 0);
+}
+
 const DWORD cursorID[] =
 {OCR_APPSTARTING, OCR_NORMAL, OCR_CROSS, OCR_HAND, OCR_IBEAM, OCR_NO, OCR_SIZEALL,
 	OCR_SIZENESW, OCR_SIZENS, OCR_SIZENWSE, OCR_SIZEWE, OCR_UP, OCR_WAIT,
@@ -223,6 +245,7 @@ void MyShowCursor(bool show, bool force = false)
 		if (show)
 		{
 			SystemParametersInfo(SPI_SETCURSORS, 0, NULL, 0);
+			MyProcShowCursor(show);
 		}
 		else
 		{
@@ -230,6 +253,7 @@ void MyShowCursor(bool show, bool force = false)
 			{
 				SetSystemCursor(CopyCursor(hCurBlank), cursorID[i]);
 			}
+			MyProcShowCursor(show);
 		}
 	}
 }
@@ -412,7 +436,8 @@ void __fastcall TFormMousePuff1::btnHelpClick(TObject *Sender)
 		L"\n\nCommand line parameters:\n-tray\tstart minimized to tray" +
 		L"\n-noicon\tdo not display tray icon" +
 		L"\n\nNote 1: If both parameters are used, run program again to show its window." +
-		L"\nNote 2: Command line parameters override UI options.").w_str(),
+		L"\nNote 2: Command line parameters override UI options." +
+		L"\nNote 3: Window Title and Executable Path can be partial string.").w_str(),
 		L"Information", MB_OK | MB_ICONINFORMATION);
 }
 

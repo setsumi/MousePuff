@@ -8,8 +8,8 @@
 
 // ---------------------------------------------------------------------------
 USEFORM("Main.cpp", FormMousePuff1);
-
-// ---------------------------------------------------------------------------
+USEFORM("OwnedWnd.cpp", FormOwnedWnd);
+//---------------------------------------------------------------------------
 int WINAPI _tWinMain(HINSTANCE, HINSTANCE, LPTSTR, int)
 {
 	try
@@ -17,8 +17,7 @@ int WINAPI _tWinMain(HINSTANCE, HINSTANCE, LPTSTR, int)
 		Application->Initialize();
 		Application->MainFormOnTaskBar = true;
 		Application->CreateForm(__classid(TFormMousePuff1), &FormMousePuff1);
-
-		// read config
+		Application->CreateForm(__classid(TFormOwnedWnd), &FormOwnedWnd);
 		TIniFile *ini = new TIniFile(ChangeFileExt(Application->ExeName, ".ini"));
 		Application->ShowMainForm = ini->ReadInteger(L"MAIN", L"StartToTray", 0) == 0;
 		delete ini;
