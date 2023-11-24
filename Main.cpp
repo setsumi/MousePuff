@@ -15,6 +15,7 @@ HINSTANCE hInstance = NULL;
 HHOOK hMouseHook = NULL, hKbdHook = NULL;
 HCURSOR hCurBlank = NULL;
 HWND hWindow = NULL;
+bool FastTermination = false;
 
 // ---------------------------------------------------------------------------
 String GetWindowClassPlus(HWND hwnd)
@@ -321,11 +322,13 @@ static BOOL CALLBACK enumWindowCallback(HWND hWnd, LPARAM lparam)
 		if (!IsWindowVisible(hWnd))
 			ShowWindow(hWnd, SW_SHOW);
 		SetForegroundWindow(hWnd);
+		FastTermination = true;
 		exit(0); // Terminate myself
 	}
 	return TRUE;
 }
 
+// ---------------------------------------------------------------------------
 void __fastcall TFormMousePuff1::FormCreate(TObject *Sender)
 {
 	hInstance = (HINSTANCE)GetWindowLong(Handle, GWL_HINSTANCE);
@@ -374,10 +377,12 @@ void __fastcall TFormMousePuff1::FormDestroy(TObject *Sender)
 	Save();
 	MyShowCursor(true, true);
 	DestroyCursor(hCurBlank);
-	HWND hHider = FindWindow(LEASED_WNDCLASS, LEASED_WNDTITLE);
-	if (hHider)
+
+	if (!FastTermination)
 	{
-		PostMessage(hHider, WM_CLOSE, 0, 0);
+		HWND hHider = FindWindow(LEASED_WNDCLASS, LEASED_WNDTITLE);
+		if (hHider)
+			PostMessage(hHider, WM_CLOSE, 0, 0);
 	}
 }
 
