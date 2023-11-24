@@ -1,48 +1,60 @@
-﻿	<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-		<PropertyGroup>
-			<ProjectGuid>{19751AE9-D280-4F77-ACD8-F2EF63BAB103}</ProjectGuid>
-		</PropertyGroup>
-		<ItemGroup>
-			<Projects Include="MousePuff.cbproj">
-				<Dependencies/>
-			</Projects>
-			<Projects Include="Spy\Spy.cbproj">
-				<Dependencies/>
-			</Projects>
-		</ItemGroup>
-		<ProjectExtensions>
-			<Borland.Personality>Default.Personality.12</Borland.Personality>
-			<Borland.ProjectType/>
-			<BorlandProject>
-				<Default.Personality/>
-			</BorlandProject>
-		</ProjectExtensions>
-		<Target Name="MousePuff">
-			<MSBuild Projects="MousePuff.cbproj"/>
-		</Target>
-		<Target Name="MousePuff:Clean">
-			<MSBuild Targets="Clean" Projects="MousePuff.cbproj"/>
-		</Target>
-		<Target Name="MousePuff:Make">
-			<MSBuild Targets="Make" Projects="MousePuff.cbproj"/>
-		</Target>
-		<Target Name="Spy">
-			<MSBuild Projects="Spy\Spy.cbproj"/>
-		</Target>
-		<Target Name="Spy:Clean">
-			<MSBuild Targets="Clean" Projects="Spy\Spy.cbproj"/>
-		</Target>
-		<Target Name="Spy:Make">
-			<MSBuild Targets="Make" Projects="Spy\Spy.cbproj"/>
-		</Target>
-		<Target Name="Build">
-			<CallTarget Targets="MousePuff;Spy"/>
-		</Target>
-		<Target Name="Clean">
-			<CallTarget Targets="MousePuff:Clean;Spy:Clean"/>
-		</Target>
-		<Target Name="Make">
-			<CallTarget Targets="MousePuff:Make;Spy:Make"/>
-		</Target>
-		<Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
-	</Project>
+﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <PropertyGroup>
+        <ProjectGuid>{19751AE9-D280-4F77-ACD8-F2EF63BAB103}</ProjectGuid>
+    </PropertyGroup>
+    <ItemGroup>
+        <Projects Include="MousePuff.cbproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="Spy\Spy.cbproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="Hider\Hider.cbproj">
+            <Dependencies/>
+        </Projects>
+    </ItemGroup>
+    <ProjectExtensions>
+        <Borland.Personality>Default.Personality.12</Borland.Personality>
+        <Borland.ProjectType/>
+        <BorlandProject>
+            <Default.Personality/>
+        </BorlandProject>
+    </ProjectExtensions>
+    <Target Name="MousePuff">
+        <MSBuild Projects="MousePuff.cbproj"/>
+    </Target>
+    <Target Name="MousePuff:Clean">
+        <MSBuild Projects="MousePuff.cbproj" Targets="Clean"/>
+    </Target>
+    <Target Name="MousePuff:Make">
+        <MSBuild Projects="MousePuff.cbproj" Targets="Make"/>
+    </Target>
+    <Target Name="Spy">
+        <MSBuild Projects="Spy\Spy.cbproj"/>
+    </Target>
+    <Target Name="Spy:Clean">
+        <MSBuild Projects="Spy\Spy.cbproj" Targets="Clean"/>
+    </Target>
+    <Target Name="Spy:Make">
+        <MSBuild Projects="Spy\Spy.cbproj" Targets="Make"/>
+    </Target>
+    <Target Name="Hider">
+        <MSBuild Projects="Hider\Hider.cbproj"/>
+    </Target>
+    <Target Name="Hider:Clean">
+        <MSBuild Projects="Hider\Hider.cbproj" Targets="Clean"/>
+    </Target>
+    <Target Name="Hider:Make">
+        <MSBuild Projects="Hider\Hider.cbproj" Targets="Make"/>
+    </Target>
+    <Target Name="Build">
+        <CallTarget Targets="MousePuff;Spy;Hider"/>
+    </Target>
+    <Target Name="Clean">
+        <CallTarget Targets="MousePuff:Clean;Spy:Clean;Hider:Clean"/>
+    </Target>
+    <Target Name="Make">
+        <CallTarget Targets="MousePuff:Make;Spy:Make;Hider:Make"/>
+    </Target>
+    <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
+</Project>

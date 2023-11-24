@@ -62,6 +62,10 @@ object FormMousePuff1: TFormMousePuff1
     object tabsheetClass: TTabSheet
       Caption = 'Window Class'
       ImageIndex = 1
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object memoClass: TMemo
         Left = 0
         Top = 0

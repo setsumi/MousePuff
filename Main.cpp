@@ -1,12 +1,11 @@
 // ---------------------------------------------------------------------------
-
 #include <vcl.h>
+#include <Registry.hpp>
 #pragma hdrstop
 
-#include <Registry.hpp>
-
 #include "Main.h"
-#include "OwnedWnd.h"
+#include "Hider/shared.h"
+
 // ---------------------------------------------------------------------------
 #pragma package(smart_init)
 #pragma resource "*.dfm"
@@ -17,6 +16,7 @@ HHOOK hMouseHook = NULL, hKbdHook = NULL;
 HCURSOR hCurBlank = NULL;
 HWND hWindow = NULL;
 
+// ---------------------------------------------------------------------------
 String GetWindowClassPlus(HWND hwnd)
 {
 	wchar_t tbuf[2048];
@@ -203,24 +203,14 @@ target:
 }
 
 // ---------------------------------------------------------------------------
-HWND SetWindowOwner(HWND hwnd, HWND hwndOwner)
-{
-	if ((GetWindowLong(hwnd, GWL_STYLE) & WS_CHILD) || (GetWindowLong(hwndOwner,
-		GWL_STYLE) & WS_CHILD))
-		return NULL;
-	return (HWND)SetWindowLongPtr(hwnd, GWLP_HWNDPARENT, (LONG_PTR)hwndOwner);
-}
-
 void MyProcShowCursor(bool show)
 {
-	if (!FormOwnedWnd)
-		return;
-	HWND hw = GetForegroundWindow();
-	SetWindowOwner(FormOwnedWnd->Handle, hw);
-	if (show)
-		while (ShowCursor(TRUE) <= -1);
-	else
-		while (ShowCursor(FALSE) >= 0);
+	HWND hHider = FindWindow(LEASED_WNDCLASS, LEASED_WNDTITLE);
+	if (hHider)
+	{
+		HWND hTarget = GetForegroundWindow();
+		PostMessage(hHider, show ? WMM_SHOWPOINTER : WMM_HIDEPOINTER, (WPARAM)hTarget, 0);
+	}
 }
 
 const DWORD cursorID[] =
@@ -371,6 +361,10 @@ void __fastcall TFormMousePuff1::FormCreate(TObject *Sender)
 	hCurBlank = LoadCursor(hInstance, L"Cursor_Blank");
 	if (hCurBlank == NULL)
 		throw Exception(L"INIT: LoadCursor() failed");
+
+	// run custom app based pointers hider
+	// as NON-elevated to avoid breaking global hook based applications
+	RunExe(L"explorer.exe Hider.exe");
 }
 
 // ---------------------------------------------------------------------------
@@ -380,6 +374,11 @@ void __fastcall TFormMousePuff1::FormDestroy(TObject *Sender)
 	Save();
 	MyShowCursor(true, true);
 	DestroyCursor(hCurBlank);
+	HWND hHider = FindWindow(LEASED_WNDCLASS, LEASED_WNDTITLE);
+	if (hHider)
+	{
+		PostMessage(hHider, WM_CLOSE, 0, 0);
+	}
 }
 
 // ---------------------------------------------------------------------------

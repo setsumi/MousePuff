@@ -1,14 +1,12 @@
 // ---------------------------------------------------------------------------
 
 #include <vcl.h>
-#pragma hdrstop
 #include <tchar.h>
-
 #include <Registry.hpp>
+#pragma hdrstop
 
 // ---------------------------------------------------------------------------
 USEFORM("Main.cpp", FormMousePuff1);
-USEFORM("OwnedWnd.cpp", FormOwnedWnd);
 //---------------------------------------------------------------------------
 int WINAPI _tWinMain(HINSTANCE, HINSTANCE, LPTSTR, int)
 {
@@ -17,7 +15,6 @@ int WINAPI _tWinMain(HINSTANCE, HINSTANCE, LPTSTR, int)
 		Application->Initialize();
 		Application->MainFormOnTaskBar = true;
 		Application->CreateForm(__classid(TFormMousePuff1), &FormMousePuff1);
-		Application->CreateForm(__classid(TFormOwnedWnd), &FormOwnedWnd);
 		TIniFile *ini = new TIniFile(ChangeFileExt(Application->ExeName, ".ini"));
 		Application->ShowMainForm = ini->ReadInteger(L"MAIN", L"StartToTray", 0) == 0;
 		delete ini;
