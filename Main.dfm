@@ -105,7 +105,7 @@ object FormMousePuff1: TFormMousePuff1
     Hint = 'Hide always'
     Caption = 'Global'
     Checked = True
-    TabOrder = 7
+    TabOrder = 6
     TabStop = True
     OnClick = radioBtnGlobalClick
   end
@@ -116,7 +116,7 @@ object FormMousePuff1: TFormMousePuff1
     Height = 21
     Hint = 'Hide only when specific window is active'
     Caption = 'Program Specific'
-    TabOrder = 8
+    TabOrder = 7
     OnClick = radioBtnGlobalClick
   end
   object udTimeout: TUpDown
@@ -127,7 +127,7 @@ object FormMousePuff1: TFormMousePuff1
     Associate = editTimeout
     Min = 1
     Position = 3
-    TabOrder = 10
+    TabOrder = 9
   end
   object editTimeout: TEdit
     Left = 243
@@ -135,8 +135,9 @@ object FormMousePuff1: TFormMousePuff1
     Width = 42
     Height = 21
     ReadOnly = True
-    TabOrder = 9
+    TabOrder = 8
     Text = '3'
+    OnChange = editTimeoutChange
   end
   object btnSpy: TButton
     Left = 301
@@ -147,16 +148,6 @@ object FormMousePuff1: TFormMousePuff1
     Caption = 'Spy...'
     TabOrder = 1
     OnClick = btnSpyClick
-  end
-  object chkDebug: TCheckBox
-    Left = 297
-    Top = 112
-    Width = 57
-    Height = 25
-    Caption = 'Debug sounds'
-    TabOrder = 4
-    Visible = False
-    WordWrap = True
   end
   object btnHide: TButton
     Left = 300
@@ -175,7 +166,7 @@ object FormMousePuff1: TFormMousePuff1
     Height = 25
     Hint = 'Help information (F1)'
     Caption = '?'
-    TabOrder = 11
+    TabOrder = 10
     OnClick = btnHelpClick
   end
   object btnExit: TButton
@@ -194,7 +185,7 @@ object FormMousePuff1: TFormMousePuff1
     Width = 134
     Height = 17
     Caption = 'Start minimized to tray'
-    TabOrder = 6
+    TabOrder = 5
   end
   object chkEnabled: TCheckBox
     Left = 133
@@ -211,7 +202,7 @@ object FormMousePuff1: TFormMousePuff1
     Font.Style = [fsBold]
     ParentFont = False
     State = cbChecked
-    TabOrder = 12
+    TabOrder = 11
     OnClick = chkEnabledClick
   end
   object chkHideTrayIcon: TCheckBox
@@ -221,7 +212,7 @@ object FormMousePuff1: TFormMousePuff1
     Height = 17
     Hint = 'Hint: In case of completely hidden, run program again to show'
     Caption = 'Hide tray icon'
-    TabOrder = 5
+    TabOrder = 4
   end
   object timerPuff: TTimer
     Enabled = False

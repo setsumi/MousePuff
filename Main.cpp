@@ -16,6 +16,7 @@ HHOOK hMouseHook = NULL, hKbdHook = NULL;
 HCURSOR hCurBlank = NULL;
 HWND hWindow = NULL;
 bool FastTermination = false;
+bool DebugMode = false;
 
 // ---------------------------------------------------------------------------
 String GetWindowClassPlus(HWND hwnd)
@@ -125,6 +126,7 @@ void TFormMousePuff1::Save()
 	ini->WriteInteger(L"MAIN", L"StartToTray", chkStartToTray->Checked ? 1 : 0);
 	ini->WriteInteger(L"MAIN", L"WinPageIndex", pageControl1->TabIndex);
 	ini->WriteInteger(L"MAIN", L"HideTrayIcon", chkHideTrayIcon->Checked ? 1 : 0);
+	ini->WriteInteger(L"MAIN", L"DebugMode", DebugMode ? 1 : 0);
 	delete ini;
 }
 
@@ -144,11 +146,13 @@ void TFormMousePuff1::Load()
 	else
 		radioBtnProgram->Checked = true;
 	udTimeout->Position = ini->ReadInteger(L"MAIN", L"Timeout", 3);
-	TimerReset();
 	chkStartToTray->Checked = ini->ReadInteger(L"MAIN", L"StartToTray", 0) == 1;
 	pageControl1->TabIndex = ini->ReadInteger(L"MAIN", L"WinPageIndex", 0);
 	chkHideTrayIcon->Checked = ini->ReadInteger(L"MAIN", L"HideTrayIcon", 0) == 1;
+	DebugMode = ini->ReadInteger(L"MAIN", L"DebugMode", 0) == 1;
 	delete ini;
+
+	TimerReset();
 }
 
 // ---------------------------------------------------------------------------
@@ -209,8 +213,15 @@ void MyProcShowCursor(bool show)
 	HWND hHider = FindWindow(LEASED_WNDCLASS, LEASED_WNDTITLE);
 	if (hHider)
 	{
-		HWND hTarget = GetForegroundWindow();
+		POINT pt;
+		GetCursorPos(&pt);
+		HWND hTarget = GetAncestor(WindowFromPoint(pt), GA_ROOT);
 		PostMessage(hHider, show ? WMM_SHOWPOINTER : WMM_HIDEPOINTER, (WPARAM)hTarget, 0);
+		if (show)
+		{
+			// do it again, sometimes above is not enough
+			PostMessage(hHider, WMM_SHOWPOINTER, (WPARAM)hTarget, 0);
+		}
 	}
 }
 
@@ -228,9 +239,9 @@ void MyShowCursor(bool show, bool force = false)
 		visible = show;
 
 		// debug sound
-		if (FormMousePuff1->chkDebug->Checked)
+		if (DebugMode)
 		{
-			MessageBeep(show ? 0 : MB_ICONASTERISK);
+			MessageBeep(show ? 0 : MB_ICONERROR);
 		}
 
 		if (show)
@@ -493,5 +504,11 @@ void __fastcall TFormMousePuff1::WndProc(TMessage& Message)
 		Show(); // repair VCL on raw ShowWindow() call
 	}
 	TForm::WndProc(Message);
+}
+
+// ---------------------------------------------------------------------------
+void __fastcall TFormMousePuff1::editTimeoutChange(TObject *Sender)
+{
+	TimerReset();
 }
 // ---------------------------------------------------------------------------

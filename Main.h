@@ -22,7 +22,6 @@ __published: // IDE-managed Components
 	TEdit *editTimeout;
 	TLabel *Label3;
 	TButton *btnSpy;
-	TCheckBox *chkDebug;
 	TButton *btnHide;
 	TButton *btnHelp;
 	TButton *btnExit;
@@ -51,6 +50,7 @@ __published: // IDE-managed Components
 	void __fastcall FormKeyDown(TObject *Sender, WORD &Key, TShiftState Shift);
 	void __fastcall chkEnabledClick(TObject *Sender);
 	void __fastcall timerKbTimer(TObject *Sender);
+	void __fastcall editTimeoutChange(TObject *Sender);
 
 protected:
 	void __fastcall WndProc(TMessage& Message);
