@@ -14,9 +14,10 @@ TFormMousePuff1 *FormMousePuff1;
 HINSTANCE hInstance = NULL;
 HHOOK hMouseHook = NULL, hKbdHook = NULL;
 HCURSOR hCurBlank = NULL;
-HWND hWindow = NULL;
+HWND hWindow = NULL; // form handle
 bool FastTermination = false;
 bool DebugMode = false;
+HWINEVENTHOOK hWinEventHook = NULL;
 
 // ---------------------------------------------------------------------------
 String GetWindowClassPlus(HWND hwnd)
@@ -341,6 +342,13 @@ static BOOL CALLBACK checkInstanceCallback(HWND hWnd, LPARAM lparam)
 }
 
 // ---------------------------------------------------------------------------
+void CALLBACK winEventProc(HWINEVENTHOOK hook, DWORD event, HWND hwnd, LONG idObject,
+	LONG idChild, DWORD dwEventThread, DWORD dwmsEventTime)
+{
+	FormMousePuff1->HookReset();
+}
+
+// ---------------------------------------------------------------------------
 void __fastcall TFormMousePuff1::FormCreate(TObject *Sender)
 {
 	hInstance = (HINSTANCE)GetWindowLong(Handle, GWL_HINSTANCE);
@@ -348,6 +356,16 @@ void __fastcall TFormMousePuff1::FormCreate(TObject *Sender)
 
 	// Check if another instance is already running
 	EnumWindows(checkInstanceCallback, NULL);
+
+	// register system notifications to repair hooks
+	if (FALSE == WTSRegisterSessionNotification(hWindow, NOTIFY_FOR_THIS_SESSION))
+		throw Exception(L"INIT: WTSRegisterSessionNotification() failed");
+
+	hWinEventHook = SetWinEventHook(EVENT_SYSTEM_DESKTOPSWITCH,
+		EVENT_SYSTEM_DESKTOPSWITCH, NULL, winEventProc, 0, 0,
+		WINEVENT_OUTOFCONTEXT /* | WINEVENT_SKIPOWNPROCESS */);
+	if (!hWinEventHook)
+		throw Exception(L"INIT: SetWinEventHook() failed");
 
 	// set up hooks
 	MyHook();
@@ -384,6 +402,11 @@ void __fastcall TFormMousePuff1::FormCreate(TObject *Sender)
 // ---------------------------------------------------------------------------
 void __fastcall TFormMousePuff1::FormDestroy(TObject *Sender)
 {
+	WTSUnRegisterSessionNotification(Handle);
+	if (hWinEventHook)
+	{
+		UnhookWinEvent(hWinEventHook);
+	}
 	MyUnhook();
 	Save();
 	MyShowCursor(true, true);
@@ -510,11 +533,8 @@ void __fastcall TFormMousePuff1::WndProc(TMessage& Message)
 	case WM_SETTINGCHANGE:
 	case WM_DISPLAYCHANGE:
 	case WM_DEVICECHANGE:
-		if (chkEnabled->Checked)
-		{
-			timerResetHook->Enabled = false;
-			timerResetHook->Enabled = true;
-		}
+	case WM_WTSSESSION_CHANGE:
+		HookReset();
 		break;
 	}
 
@@ -522,10 +542,21 @@ void __fastcall TFormMousePuff1::WndProc(TMessage& Message)
 }
 
 // ---------------------------------------------------------------------------
+void TFormMousePuff1::HookReset()
+{
+	if (chkEnabled->Checked)
+	{
+		timerResetHook->Enabled = false;
+		timerResetHook->Enabled = true;
+	}
+}
+
+// ---------------------------------------------------------------------------
 void __fastcall TFormMousePuff1::timerResetHookTimer(TObject *Sender)
 {
 	timerResetHook->Enabled = false;
 	MyHook();
+	// MessageBeep(0);
 }
 
 // ---------------------------------------------------------------------------

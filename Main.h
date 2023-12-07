@@ -68,6 +68,7 @@ public: // User declarations
 
 	bool TargetProgram();
 	void TimerReset();
+	void HookReset();
 };
 
 // ---------------------------------------------------------------------------

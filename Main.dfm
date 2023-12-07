@@ -249,8 +249,9 @@ object FormMousePuff1: TFormMousePuff1
   end
   object timerResetHook: TTimer
     Enabled = False
+    Interval = 500
     OnTimer = timerResetHookTimer
-    Left = 172
+    Left = 188
     Top = 113
   end
 end
