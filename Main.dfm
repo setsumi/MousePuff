@@ -44,10 +44,6 @@ object FormMousePuff1: TFormMousePuff1
     object tabsheetTitle: TTabSheet
       Hint = 'Full or partial window title'
       Caption = 'Window Title'
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object memoTitle: TMemo
         Left = 0
         Top = 0
@@ -62,10 +58,6 @@ object FormMousePuff1: TFormMousePuff1
     object tabsheetClass: TTabSheet
       Caption = 'Window Class'
       ImageIndex = 1
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object memoClass: TMemo
         Left = 0
         Top = 0
@@ -81,10 +73,6 @@ object FormMousePuff1: TFormMousePuff1
       Hint = 'Full or partial exe path'
       Caption = 'Executable'
       ImageIndex = 2
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object memoExe: TMemo
         Left = 0
         Top = 0
@@ -213,12 +201,13 @@ object FormMousePuff1: TFormMousePuff1
     Hint = 'Hint: In case of completely hidden, run program again to show'
     Caption = 'Hide tray icon'
     TabOrder = 4
+    OnClick = chkHideTrayIconClick
   end
   object timerPuff: TTimer
     Enabled = False
     OnTimer = timerPuffTimer
-    Left = 136
-    Top = 124
+    Left = 80
+    Top = 116
   end
   object trayIcon: TTrayIcon
     Hint = 'MousePuff (Hide Mouse Pointer)'
@@ -248,14 +237,20 @@ object FormMousePuff1: TFormMousePuff1
       0000000000000000000000000000000000000000000000000000000000000000
       000000000000000000000000000000000000000000000000000000000000}
     OnClick = trayIconClick
-    Left = 92
-    Top = 124
+    Left = 36
+    Top = 116
   end
   object timerKb: TTimer
     Enabled = False
     Interval = 300
     OnTimer = timerKbTimer
-    Left = 182
-    Top = 123
+    Left = 126
+    Top = 115
+  end
+  object timerResetHook: TTimer
+    Enabled = False
+    OnTimer = timerResetHookTimer
+    Left = 172
+    Top = 113
   end
 end

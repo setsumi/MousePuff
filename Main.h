@@ -37,6 +37,7 @@ __published: // IDE-managed Components
 	TTimer *timerKb;
 	TLabel *Label1;
 	TCheckBox *chkHideTrayIcon;
+	TTimer *timerResetHook;
 
 	void __fastcall FormCreate(TObject *Sender);
 	void __fastcall FormDestroy(TObject *Sender);
@@ -51,6 +52,8 @@ __published: // IDE-managed Components
 	void __fastcall chkEnabledClick(TObject *Sender);
 	void __fastcall timerKbTimer(TObject *Sender);
 	void __fastcall editTimeoutChange(TObject *Sender);
+	void __fastcall chkHideTrayIconClick(TObject *Sender);
+	void __fastcall timerResetHookTimer(TObject *Sender);
 
 protected:
 	void __fastcall WndProc(TMessage& Message);

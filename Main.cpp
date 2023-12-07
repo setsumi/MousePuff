@@ -216,6 +216,7 @@ void MyProcShowCursor(bool show)
 		POINT pt;
 		GetCursorPos(&pt);
 		HWND hTarget = GetAncestor(WindowFromPoint(pt), GA_ROOT);
+		// HWND hTarget = GetForegroundWindow();
 		PostMessage(hHider, show ? WMM_SHOWPOINTER : WMM_HIDEPOINTER, (WPARAM)hTarget, 0);
 		if (show)
 		{
@@ -325,7 +326,7 @@ void __fastcall TFormMousePuff1::timerKbTimer(TObject *Sender)
 }
 
 // ---------------------------------------------------------------------------
-static BOOL CALLBACK enumWindowCallback(HWND hWnd, LPARAM lparam)
+static BOOL CALLBACK checkInstanceCallback(HWND hWnd, LPARAM lparam)
 {
 	// Activate another instance if already running
 	if (hWnd != hWindow && SameStr(GetWindowClassPlus(hWnd), L"TFormMousePuff1"))
@@ -346,11 +347,7 @@ void __fastcall TFormMousePuff1::FormCreate(TObject *Sender)
 	hWindow = Handle;
 
 	// Check if another instance is already running
-	EnumWindows(enumWindowCallback, NULL);
-
-#ifdef _DEBUG
-	chkDebug->Visible = true;
-#endif
+	EnumWindows(checkInstanceCallback, NULL);
 
 	// set up hooks
 	MyHook();
@@ -378,7 +375,10 @@ void __fastcall TFormMousePuff1::FormCreate(TObject *Sender)
 
 	// run custom app based pointers hider
 	// as NON-elevated to avoid breaking global hook based applications
-	RunExe(L"explorer.exe Hider.exe");
+	if (FileExists(L"Hider.exe"))
+	{
+		RunExe(L"explorer.exe Hider.exe");
+	}
 }
 
 // ---------------------------------------------------------------------------
@@ -499,16 +499,44 @@ void __fastcall TFormMousePuff1::chkEnabledClick(TObject *Sender)
 // ---------------------------------------------------------------------------
 void __fastcall TFormMousePuff1::WndProc(TMessage& Message)
 {
-	if (Message.Msg == WM_SHOWWINDOW && Message.WParam == TRUE)
+	switch (Message.Msg)
 	{
-		Show(); // repair VCL on raw ShowWindow() call
+	case WM_SHOWWINDOW:
+		if (Message.WParam == TRUE)
+		{
+			Show(); // repair VCL on raw ShowWindow() call
+		}
+		break;
+	case WM_SETTINGCHANGE:
+	case WM_DISPLAYCHANGE:
+	case WM_DEVICECHANGE:
+		if (chkEnabled->Checked)
+		{
+			timerResetHook->Enabled = false;
+			timerResetHook->Enabled = true;
+		}
+		break;
 	}
+
 	TForm::WndProc(Message);
+}
+
+// ---------------------------------------------------------------------------
+void __fastcall TFormMousePuff1::timerResetHookTimer(TObject *Sender)
+{
+	timerResetHook->Enabled = false;
+	MyHook();
 }
 
 // ---------------------------------------------------------------------------
 void __fastcall TFormMousePuff1::editTimeoutChange(TObject *Sender)
 {
 	TimerReset();
+}
+
+// ---------------------------------------------------------------------------
+void __fastcall TFormMousePuff1::chkHideTrayIconClick(TObject *Sender)
+{
+	trayIcon->Visible = !chkHideTrayIcon->Checked;
 }
 // ---------------------------------------------------------------------------

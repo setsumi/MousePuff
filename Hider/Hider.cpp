@@ -43,6 +43,12 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCmdL
 	{0};
 	BOOL bRet;
 
+	// prevent multiple instances
+	if (FindWindow(LEASED_WNDCLASS, LEASED_WNDTITLE))
+	{
+		return 0;
+	}
+
 	try
 	{
 		// register window class
