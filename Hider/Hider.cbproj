@@ -138,9 +138,9 @@
         <UsePackages>false</UsePackages>
         <VerInfo_IncludeVerInfo>true</VerInfo_IncludeVerInfo>
         <VerInfo_MinorVer>6</VerInfo_MinorVer>
-        <VerInfo_Release>5</VerInfo_Release>
+        <VerInfo_Release>6</VerInfo_Release>
         <VerInfo_Locale>1033</VerInfo_Locale>
-        <VerInfo_Keys>CompanyName=;FileVersion=1.6.5.0;InternalName=;LegalCopyright=;LegalTrademarks=;OriginalFilename=;ProductVersion=1.6.5.0;Comments=;ProgramID=;FileDescription=MousePuff by furniture;ProductName=</VerInfo_Keys>
+        <VerInfo_Keys>CompanyName=;FileVersion=1.6.6.0;InternalName=;LegalCopyright=;LegalTrademarks=;OriginalFilename=;ProductVersion=1.6.6.0;Comments=;ProgramID=;FileDescription=MousePuff by furniture;ProductName=</VerInfo_Keys>
         <AppEnableRuntimeThemes>true</AppEnableRuntimeThemes>
         <DynamicRTL>false</DynamicRTL>
         <ILINK_MapFileType>None</ILINK_MapFileType>

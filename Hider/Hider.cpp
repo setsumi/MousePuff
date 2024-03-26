@@ -43,6 +43,9 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCmdL
 	{0};
 	BOOL bRet;
 
+	// to not break under heavy CPU load
+	SetPriorityClass(GetCurrentProcess(), HIGH_PRIORITY_CLASS);
+
 	// prevent multiple instances
 	if (FindWindow(LEASED_WNDCLASS, LEASED_WNDTITLE))
 	{

@@ -354,6 +354,9 @@ void __fastcall TFormMousePuff1::FormCreate(TObject *Sender)
 	hInstance = (HINSTANCE)GetWindowLong(Handle, GWL_HINSTANCE);
 	hWindow = Handle;
 
+	// to not break under heavy CPU load
+	SetPriorityClass(GetCurrentProcess(), HIGH_PRIORITY_CLASS);
+
 	// Check if another instance is already running
 	EnumWindows(checkInstanceCallback, NULL);
 

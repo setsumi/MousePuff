@@ -44,6 +44,10 @@ object FormMousePuff1: TFormMousePuff1
     object tabsheetTitle: TTabSheet
       Hint = 'Full or partial window title'
       Caption = 'Window Title'
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object memoTitle: TMemo
         Left = 0
         Top = 0
@@ -58,6 +62,10 @@ object FormMousePuff1: TFormMousePuff1
     object tabsheetClass: TTabSheet
       Caption = 'Window Class'
       ImageIndex = 1
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object memoClass: TMemo
         Left = 0
         Top = 0
@@ -73,6 +81,10 @@ object FormMousePuff1: TFormMousePuff1
       Hint = 'Full or partial exe path'
       Caption = 'Executable'
       ImageIndex = 2
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object memoExe: TMemo
         Left = 0
         Top = 0
