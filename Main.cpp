@@ -18,6 +18,7 @@ HWND hWindow = NULL; // form handle
 bool FastTermination = false;
 bool DebugMode = false;
 HWINEVENTHOOK hWinEventHook = NULL;
+bool bParamClose = false;
 
 // ---------------------------------------------------------------------------
 String GetWindowClassPlus(HWND hwnd)
@@ -66,6 +67,19 @@ void RunExe(String cmdline)
 	{
 		throw Exception(L"RunExe(\"" + cmdline + L"\") failed");
 	}
+}
+
+// ---------------------------------------------------------------------------
+bool HaveParam(String param)
+{
+	for (int i = 1; i <= ParamCount(); i++)
+	{
+		if (LowerCase(ParamStr(i)) == param)
+		{
+			return true;
+		}
+	}
+	return false;
 }
 
 // ---------------------------------------------------------------------------
@@ -327,16 +341,33 @@ void __fastcall TFormMousePuff1::timerKbTimer(TObject *Sender)
 }
 
 // ---------------------------------------------------------------------------
+void TerminateMyself()
+{
+	if (!FastTermination)
+	{
+		FastTermination = true;
+		exit(0);
+	}
+}
+
+// ---------------------------------------------------------------------------
 static BOOL CALLBACK checkInstanceCallback(HWND hWnd, LPARAM lparam)
 {
-	// Activate another instance if already running
+	// Another instance is already running
 	if (hWnd != hWindow && SameStr(GetWindowClassPlus(hWnd), L"TFormMousePuff1"))
 	{
-		if (!IsWindowVisible(hWnd))
-			ShowWindow(hWnd, SW_SHOW);
-		SetForegroundWindow(hWnd);
-		FastTermination = true;
-		exit(0); // Terminate myself
+		if (bParamClose) // param: close running instance
+		{
+			PostMessage(hWnd, WM_CLOSE, 0, 0);
+		}
+		else // activate running instance
+		{
+			if (!IsWindowVisible(hWnd))
+				ShowWindow(hWnd, SW_SHOW);
+			SetForegroundWindow(hWnd);
+		}
+		// Terminate myself
+		TerminateMyself();
 	}
 	return TRUE;
 }
@@ -357,8 +388,11 @@ void __fastcall TFormMousePuff1::FormCreate(TObject *Sender)
 	// to not break under heavy CPU load
 	SetPriorityClass(GetCurrentProcess(), HIGH_PRIORITY_CLASS);
 
+	bParamClose = HaveParam(L"-close");
 	// Check if another instance is already running
 	EnumWindows(checkInstanceCallback, NULL);
+	if (bParamClose)
+		TerminateMyself();
 
 	// register system notifications to repair hooks
 	if (FALSE == WTSRegisterSessionNotification(hWindow, NOTIFY_FOR_THIS_SESSION))
@@ -375,16 +409,7 @@ void __fastcall TFormMousePuff1::FormCreate(TObject *Sender)
 	// load config
 	Load();
 	// read command line (overrides config)
-	bool noicon = false;
-	for (int i = 1; i <= ParamCount(); i++)
-	{
-		if (LowerCase(ParamStr(i)) == "-noicon")
-		{
-			noicon = true;
-			break;
-		}
-	}
-	if (!noicon) // if no parameter then decide by config
+	if (!HaveParam(L"-noicon")) // if no parameter then decide by config
 	{
 		trayIcon->Visible = !chkHideTrayIcon->Checked;
 	}
@@ -411,12 +436,13 @@ void __fastcall TFormMousePuff1::FormDestroy(TObject *Sender)
 		UnhookWinEvent(hWinEventHook);
 	}
 	MyUnhook();
-	Save();
 	MyShowCursor(true, true);
 	DestroyCursor(hCurBlank);
 
 	if (!FastTermination)
 	{
+		Save();
+
 		HWND hHider = FindWindow(LEASED_WNDCLASS, LEASED_WNDTITLE);
 		if (hHider)
 			PostMessage(hHider, WM_CLOSE, 0, 0);
@@ -476,6 +502,7 @@ void __fastcall TFormMousePuff1::btnHelpClick(TObject *Sender)
 	MessageBox(Handle, (Caption + L"\nversion " + ProgramVer() +
 		L"\n\nCommand line parameters:\n-tray\tstart minimized to tray" +
 		L"\n-noicon\tdo not display tray icon" +
+		L"\n-close\tclose running instance if any" +
 		L"\n\nNote 1: If both parameters are used, run program again to show its window." +
 		L"\nNote 2: Command line parameters override UI options." +
 		L"\nNote 3: Window Title and Executable Path can be partial string.").w_str(),
